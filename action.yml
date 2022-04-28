@@ -1,0 +1,14 @@
+name: "Main action file of composite actions"
+description: "composite actions"
+
+inputs:
+  github_token:
+    description: "Token used to access repo"
+    required: false
+    default: ${{ github.token }}
+    
+runs:
+  using: "composite"
+  steps:
+    - run: ${{ github.action_path }}/main.sh
+      shell: bash
