@@ -9,17 +9,17 @@ SEP="&&"
 
 # Issue comments
 case $COMMENT in
- /Close)
- gh pr close $PR_URL
- gh pr comment $PR_URL --body "Pull Request Closed!"
- ;;
- /Approved)
- gh pr merge $PR_URL -m
- gh pr comment $PR_URL --body "Pull Request Merged!"
- ;;
- *)
- echo "For manually approve or close PR use slash-comments on body with /Approved or /Close"
- ;;
+  /Close)
+    gh pr close $PR_URL
+    gh pr comment $PR_URL --body "Pull Request Closed!"
+    ;;
+  /Approved)
+    gh pr merge $PR_URL -m
+    gh pr comment $PR_URL --body "Pull Request Merged!"
+    ;;
+  *)
+  echo "For manually approve or close PR use slash-comments on body with /Approved or /Close"
+  ;;
 esac
 
 # target master
