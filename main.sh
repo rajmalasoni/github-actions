@@ -12,7 +12,7 @@ aday=86400 #24 hrs
 
 #date and time of PR
 
-latest_commit_date=$(curl -X GET -u NaveenKundeti-IBS:$token https://api.github.com/repos/$owner/$repo/pulls/$pull_number/commits | jq -r '.[-1].commit.committer.date')
+latest_commit_date=$(curl -X GET -u devops-ibs:$token https://api.github.com/repos/$owner/$repo/pulls/$pull_number/commits | jq -r '.[-1].commit.committer.date')
 live_date=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
 convert_live_date=$(date -u -d "$live_date" +%s)
 convert_latest_commit_date=$(date -u -d "$latest_commit_date" +%s)
