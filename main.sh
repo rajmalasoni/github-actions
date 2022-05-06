@@ -26,12 +26,12 @@ echo "difference time: $DIFFERENCE"
 
 if [ $DIFFERENCE -lt $aday ]
 then
-   echo "Don't close PR"
+   echo "This PR is active. Don't close PR"
 elif [ $DIFFERENCE -gt $aday ]
 then
-   echo "Close PR"
-   gh pr close $PR_URL
-   gh pr comment $PR_URL --body "Pull Request is stale"
+   echo "This PR is stale becacuse no activity. Close PR"
+   # gh pr close $PR_URL
+   # gh pr comment $PR_URL --body "Pull Request is stale"
 else
    echo "None of the condition met"
 fi
