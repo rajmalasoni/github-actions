@@ -13,13 +13,7 @@ four_days=345600
 nine_days=777600
 ten_days=864000
 
-e=60 # 1 mins
-f=180 #3 mins
-g=300 #5 mins
-
-
 #date and time of PR
-
 latest_commit_date=$(curl -X GET -u devops-ibs:$token $BASE_URI/repos/$owner/$repo/pulls/$pull_number/commits | jq -r '.[-1].commit.committer.date')
 stale_date=$(curl -X GET -u devops-ibs:$token $BASE_URI/repos/$owner/$repo/pulls/$pull_number | jq -r '.updated_at')
 
@@ -40,17 +34,16 @@ echo "difference time: $DIFFERENCE"
 echo "label difference time: $label_diff"
 
 
-if [ $DIFFERENCE -lt $e ]
+if [ $DIFFERENCE -lt $nine_days ]
 then
    echo "This PR is active. Don't close PR"
    gh pr edit $PR_URL --remove-label "Stale"
-elif [ $DIFFERENCE -le $f ]
+elif [ $DIFFERENCE -le $ten_days ]
 then
    echo "This PR is stale because it has been open 10 days with no activity."
    gh pr edit $PR_URL --add-label "Stale" 
    gh pr comment $PR_URL --body "This issue is stale because it has been open 10 days with no activity. Remove stale label or comment or this will be closed in 4 days."
-
-elif [ $label_diff -gt $g ]
+elif [ $label_diff -gt $four_days ]
 then
    echo "This PR was closed because it has been stalled for 4 days with no activity."
    gh pr close $PR_URL
@@ -60,24 +53,3 @@ then
 else
    echo "None of the condition met"
 fi
-
-
-# if [ $DIFFERENCE -lt $nine_days ]
-# then
-#    echo "This PR is active. Don't close PR"
-#    gh pr edit $PR_URL --remove-label "Stale"
-# elif [ $DIFFERENCE -le $ten_days ]
-# then
-#    echo "This PR is stale because it has been open 10 days with no activity."
-#    gh pr edit $PR_URL --add-label "Stale" 
-#    gh pr comment $PR_URL --body "This issue is stale because it has been open 10 days with no activity. Remove stale label or comment or this will be closed in 4 days."
-# elif [ $label_diff -gt $four_days ]
-# then
-#    echo "This PR was closed because it has been stalled for 4 days with no activity."
-#    gh pr close $PR_URL
-#    gh pr edit $PR_URL --remove-label "Stale"
-#    gh pr comment $PR_URL --body "This PR was closed because it has been stalled for 4 days with no activity."
- 
-# else
-#    echo "None of the condition met"
-# fi
