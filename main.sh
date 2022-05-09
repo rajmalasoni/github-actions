@@ -50,7 +50,7 @@ then
    gh pr edit $PR_URL --add-label "Stale" 
    gh pr comment $PR_URL --body "This issue is stale because it has been open 10 days with no activity. Remove stale label or comment or this will be closed in 4 days."
 
-elif [ $label_diff -gt $f ]
+elif [ $label_diff -gt $g ]
 then
    echo "This PR was closed because it has been stalled for 4 days with no activity."
    gh pr close $PR_URL
