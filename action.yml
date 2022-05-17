@@ -35,5 +35,5 @@ runs:
         REPO_OWNER: ${{ inputs.owner }}
         REPO_NAME: ${{ inputs.repo }}
         BASE_URI: ${{ inputs.base }}
-        head_ref: ${{ inputs.head_ref }}
-        base_ref: ${{ inputs.base_ref }}
+        HEAD_REF: ${{ inputs.head_ref }}
+        BASE_REF: ${{ inputs.base_ref }}
