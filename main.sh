@@ -1,13 +1,12 @@
 #!/bin/bash
 
-echo $PR_NUMBER
 COMMENT="$COMMENT_BODY"
-DESCRIPTION="$PR_BODY"
+PR_BODY="$PR_BODY"
 BASE="$BASE_REF"
 HEAD="$HEAD_REF"
 SEP="&&"
 
-# for stale actions
+# for curl API
 PR_URL="$PR_URL"
 token="$GITHUB_TOKEN"
 BASE_URI="https://api.github.com"
@@ -16,7 +15,7 @@ repo="$REPO_NAME"
 pull_number="$PR_NUMBER"
 
 #date and time of PR
-latest_commit_date=$(curl -X GET -u devops-ibs:$token $BASE_URI/repos/$owner/$repo/pulls/$pull_number/commits | jq -r '.[-1].commit.committer.date')
+latest_commit_date=$(curl -X GET -u $owner:$token $BASE_URI/repos/$owner/$repo/pulls/$pull_number/commits | jq -r '.[-1].commit.committer.date')
 
 live_date=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
 convert_live_date=$(date -u -d "$live_date" +%s)
@@ -33,15 +32,19 @@ echo "difference time: $DIFFERENCE"
 aday=86400 #24 hrs
 two_weeks=1209600 # 14 days
 
+# Stale Pull Request
 if [ $DIFFERENCE -lt $two_weeks ]
 then
    echo "This PR is active, Don't Close"
 elif [ $DIFFERENCE -gt $two_weeks ]
 then
    echo "This PR is stale and close because it has been open from 14 days with no activity."
-   gh pr edit $PR_URL --add-label "Stale" 
-   gh pr close $PR_URL
-   gh pr comment $PR_URL --body "This PR was closed because it has been stalled for 14 days with no activity."
+   curl -X PATCH -u $owner:$token $BASE_URI/repos/$owner/$repo/pulls/$pull_number \
+  -d '{ "labels": "Stale" }'
+   curl -X PATCH -u $owner:$token $BASE_URI/repos/$owner/$repo/pulls/$pull_number \
+  -d '{ "state": "closed" }'
+  curl -X POST -u $owner:$token $BASE_URI/repos/$owner/$repo/issues/$pull_number/comments \
+  -d '{"body":"This PR was closed because it has been stalled for 14 days with no activity."}'
 else
    echo "None of the condition met"
 fi
@@ -49,12 +52,16 @@ fi
 # Issue comments
 case $COMMENT in
  /Close)
- gh pr close $PR_URL
- gh pr comment $PR_URL --body "Pull Request Closed!"
+curl -X PATCH -u $owner:$token $BASE_URI/repos/$owner/$repo/pulls/$pull_number \
+  -d '{ "state": "closed" }'
+curl -X POST -u $owner:$token $BASE_URI/repos/$owner/$repo/issues/$pull_number/comments \
+  -d '{"body":"Pull Request Closed!"}'
  ;;
  /Approved)
- gh pr merge $PR_URL -m
- gh pr comment $PR_URL --body "Pull Request Merged!"
+curl -X PUT -u $owner:$token $BASE_URI/repos/$owner/$repo/pulls/$pull_number/merge \
+  -d '{ "merged": true }'
+curl -X POST -u $owner:$token $BASE_URI/repos/$owner/$repo/issues/$pull_number/comments \
+  -d '{"body":"Pull Request Merged!"}'
  ;;
  *)
  echo "For manually approve or close PR use slash-comments on PR body with /Approved or /Close"
@@ -68,15 +75,20 @@ case "${BASE}${SEP}${HEAD}" in
   "false${SEP}false") 
     echo "Should not close PR from feature branches";;
   "true${SEP}false") 
-    gh pr close $PR_URL
-    gh pr comment $PR_URL --body "PR from feature branch to master won't accept";;
+    curl -X PATCH -u $owner:$token $BASE_URI/repos/$owner/$repo/pulls/$pull_number \
+  -d '{ "state": "closed" }'
+    curl -X POST -u $owner:$token $BASE_URI/repos/$owner/$repo/issues/$pull_number/comments \
+  -d '{"body":"PR from feature branch to master wont accept"}'
+    ;;
 esac
 
 # Description
-if [[ ! $DESCRIPTION ]]; then
-  echo "PR has No valied description"
-  gh pr close $PR_URL
-  gh pr comment $PR_URL --body "No Description on PR body. Please add valied description."  
+if [[ ! $PR_BODY ]]; then
+  echo "PR has No valied description" 
+  curl -X POST -u $owner:$token $BASE_URI/repos/$owner/$repo/issues/$pull_number/comments \
+  -d '{"body":"No Description on PR body. Please add valied description."}'
+  curl -X PATCH -u $owner:$token $BASE_URI/repos/$owner/$repo/pulls/$pull_number \
+  -d '{ "state": "closed" }'
 else
   echo "PR has valied Description"
 fi
