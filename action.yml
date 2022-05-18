@@ -6,15 +6,15 @@ inputs:
     description: "Token used to access repo"
     required: false
   owner:
-    description: owner
+    description: owner name
     default: ${{ github.event.repository.owner.login }}
     required: false 
   repo:
-    description: repo
+    description: repository name
     default: ${{ github.event.repository.name }}
     required: false 
   base:
-    description: base uri
+    description: Base URI
     default: "https://api.github.com"
     required: false  
   head_ref:  
@@ -25,6 +25,12 @@ inputs:
     description: Base Refer branch
     default: ${{ contains(github.base_ref, 'master') }}
     required: false  
+  pr_body:
+    description: PR body or description
+    required: false
+  pr_number:
+    description: PR number
+    required: false   
     
 runs:
   using: "composite"
@@ -37,3 +43,5 @@ runs:
         BASE_URI: ${{ inputs.base }}
         HEAD_REF: ${{ inputs.head_ref }}
         BASE_REF: ${{ inputs.base_ref }}
+        PR_BODY : ${{ inputs.pr_body }} 
+        PR_NUMBER: ${{ inputs.pr_number }}

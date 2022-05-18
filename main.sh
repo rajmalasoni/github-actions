@@ -7,7 +7,6 @@ HEAD="$HEAD_REF"
 SEP="&&"
 
 # for curl API
-PR_URL="$PR_URL"
 token="$GITHUB_TOKEN"
 BASE_URI="https://api.github.com"
 owner="$REPO_OWNER"
@@ -39,8 +38,8 @@ then
 elif [ $DIFFERENCE -gt $two_weeks ]
 then
    echo "This PR is stale and close because it has been open from 14 days with no activity."
-   curl -X PATCH -u $owner:$token $BASE_URI/repos/$owner/$repo/pulls/$pull_number \
-  -d '{ "labels": "Stale" }'
+   curl -X POST -u $owner:$token $BASE_URI/repos/$owner/$repo/issues/$pull_number/labels \
+  -d '{"labels":["Stale"]}'
    curl -X PATCH -u $owner:$token $BASE_URI/repos/$owner/$repo/pulls/$pull_number \
   -d '{ "state": "closed" }'
   curl -X POST -u $owner:$token $BASE_URI/repos/$owner/$repo/issues/$pull_number/comments \
@@ -86,9 +85,9 @@ esac
 if [[ ! $PR_BODY ]]; then
   echo "PR has No valied description" 
   curl -X POST -u $owner:$token $BASE_URI/repos/$owner/$repo/issues/$pull_number/comments \
-  -d '{"body":"No Description on PR body. Please add valied description."}'
+  -d '{"body":"No Description on PR body. Please add valid description."}'
   curl -X PATCH -u $owner:$token $BASE_URI/repos/$owner/$repo/pulls/$pull_number \
   -d '{ "state": "closed" }'
 else
-  echo "PR has valied Description"
+  echo "PR has valid Description"
 fi
