@@ -1,6 +1,7 @@
 #!/bin/bash
 
-COMMENT="$COMMENT_BODY"
+MERGE_PR="$MERGE_PR"
+CLOSE_PR="$CLOSE_PR"
 PR_BODY="$PR_BODY"
 BASE="$BASE_REF"
 HEAD="$HEAD_REF"
@@ -49,22 +50,28 @@ else
 fi
 
 # Issue comments
-case $COMMENT in
- /Close)
-curl -X PATCH -u $owner:$token $BASE_URI/repos/$owner/$repo/pulls/$pull_number \
-  -d '{ "state": "closed" }'
-curl -X POST -u $owner:$token $BASE_URI/repos/$owner/$repo/issues/$pull_number/comments \
-  -d '{"body":"Pull Request Closed!"}'
- ;;
- /Approved)
-curl -X PUT -u $owner:$token $BASE_URI/repos/$owner/$repo/pulls/$pull_number/merge \
+case "${MERGE_PR}" in
+  "true") 
+  echo "PR has Approved."
+  curl -X PUT -u $owner:$token $BASE_URI/repos/$owner/$repo/pulls/$pull_number/merge \
   -d '{ "merged": true }'
-curl -X POST -u $owner:$token $BASE_URI/repos/$owner/$repo/issues/$pull_number/comments \
+  curl -X POST -u $owner:$token $BASE_URI/repos/$owner/$repo/issues/$pull_number/comments \
   -d '{"body":"Pull Request Merged!"}'
- ;;
- *)
- echo "For manually approve or close PR use slash-comments on PR body with /Approved or /Close"
- ;;
+    ;;
+  "false") 
+    echo "PR hasn't Approved yet.";;
+esac
+
+case "${CLOSE_PR}" in
+  "true") 
+  echo "PR has Closed manually by comments."
+  curl -X PATCH -u $owner:$token $BASE_URI/repos/$owner/$repo/pulls/$pull_number \
+  -d '{ "state": "closed" }'
+  curl -X POST -u $owner:$token $BASE_URI/repos/$owner/$repo/issues/$pull_number/comments \
+  -d '{"body":"Pull Request Closed!"}'
+    ;;
+  "false") 
+    echo "PR hasn't Closed manually.";;
 esac
 
 # Pull_request target master
