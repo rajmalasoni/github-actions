@@ -26,8 +26,11 @@ inputs:
     default: ${{ contains(github.base_ref, 'master') }}
     required: false  
   pr_body:
-    description: PR body or description
+    description: PR body
     required: false
+  pr_description:
+    description: PR description
+    required: false  
   pr_number:
     description: PR number
     required: false
@@ -36,7 +39,7 @@ inputs:
     required: false
   close_pr:
     description: PR number
-    required: false   
+    required: false     
     
 runs:
   using: "composite"
@@ -50,6 +53,8 @@ runs:
         HEAD_REF: ${{ inputs.head_ref }}
         BASE_REF: ${{ inputs.base_ref }}
         PR_BODY : ${{ inputs.pr_body }} 
+        PR_DESCRIPTION: ${{ inputs.pr_description }}
         PR_NUMBER: ${{ inputs.pr_number }}
         MERGE_PR: ${{ inputs.merge_pr }}
         CLOSE_PR: ${{ inputs.close_pr }}
+        
