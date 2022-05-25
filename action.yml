@@ -2,13 +2,54 @@ name: "Main action file of composite actions"
 description: "composite actions"
 
 inputs:
-  github_token:
+  GITHUB_TOKEN:
     description: "Token used to access repo"
     required: false
-    default: ${{ github.token }}
+  owner:
+    description: owner name
+    default: ${{ github.event.repository.owner.login }}
+    required: false 
+  repo:
+    description: repository name
+    default: ${{ github.event.repository.name }}
+    required: false 
+  base:
+    description: Base URI
+    default: "https://api.github.com"
+    required: false  
+  head_ref:  
+    description: Head Refer branch
+    default: ${{ contains(github.head_ref, 'release') }}
+    required: false
+  base_ref:
+    description: Base Refer branch
+    default: ${{ contains(github.base_ref, 'master') }}
+    required: false  
+  pr_body:
+    description: PR body or description
+    required: false
+  pr_number:
+    description: PR number
+    required: false
+  merge_pr:
+    description: PR number
+    required: false
+  close_pr:
+    description: PR number
+    required: false   
     
 runs:
   using: "composite"
   steps:
     - run: ${{ github.action_path }}/main.sh
       shell: bash
+      env:
+        REPO_OWNER: ${{ inputs.owner }}
+        REPO_NAME: ${{ inputs.repo }}
+        BASE_URI: ${{ inputs.base }}
+        HEAD_REF: ${{ inputs.head_ref }}
+        BASE_REF: ${{ inputs.base_ref }}
+        PR_BODY : ${{ inputs.pr_body }} 
+        PR_NUMBER: ${{ inputs.pr_number }}
+        MERGE_PR: ${{ inputs.merge_pr }}
+        CLOSE_PR: ${{ inputs.close_pr }}
