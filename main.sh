@@ -15,6 +15,9 @@ owner="$REPO_OWNER"
 repo="$REPO_NAME"
 pull_number="$PR_NUMBER"
 
+# Stale Pull Request
+stale () {
+
 #date and time of PR
 latest_commit_date=$(curl -X GET -u $owner:$token $BASE_URI/repos/$owner/$repo/pulls/$pull_number/commits | jq -r '.[-1].commit.committer.date')
 
@@ -32,8 +35,6 @@ echo "difference time: $DIFFERENCE"
 #time
 two_weeks=1209600 # 14 days
 
-# Stale Pull Request
-stale () {
 case $((
 (DIFFERENCE < two_weeks) * 1 +
 (DIFFERENCE > two_weeks) * 2)) in
@@ -50,6 +51,7 @@ esac
 }
 
 # Issue comments
+merge() {
 case "${MERGE_PR}" in
   "true") 
   echo "PR has Approved."
@@ -59,7 +61,9 @@ case "${MERGE_PR}" in
   -d '{"body":"Pull Request Merged!"}'
     ;;
 esac
+}
 
+close() {
 case "${CLOSE_PR}" in
   "true") 
   echo "PR has Closed manually by comments."
@@ -69,6 +73,7 @@ case "${CLOSE_PR}" in
   -d '{"body":"Pull Request Closed!"}'
     ;;
 esac
+}
 
 # Pull_request target master
 target() {
