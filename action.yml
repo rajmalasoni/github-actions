@@ -44,8 +44,28 @@ inputs:
 runs:
   using: "composite"
   steps:
-    - run: ${{ github.action_path }}/main.sh
+    # - name: All actions
+    #   run: ${{ github.action_path }}/main.sh
+    #   shell: bash
+    - name: description pr
+      if: inputs.pr_description == 'true'
+      run: ${{ github.action_path }}/main.sh description
       shell: bash
+    - name: target pr  
+      if: inputs.base_ref == 'true' && inputs.head_ref == 'false'
+      run: ${{ github.action_path }}/main.sh target
+      shell: bash  
+    # - name: stale pr 
+    #   run: ${{ github.action_path }}/fun.sh stale
+    #   shell: bash 
+    - name: merge pr  
+      if: inputs.merge_pr == 'true'
+      run: ${{ github.action_path }}/fun.sh merge
+      shell: bash 
+    - name: close pr  
+      if: inputs.close_pr == 'true'
+      run: ${{ github.action_path }}/fun.sh close
+      shell: bash       
       env:
         REPO_OWNER: ${{ inputs.owner }}
         REPO_NAME: ${{ inputs.repo }}
