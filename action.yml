@@ -53,15 +53,15 @@ runs:
       run: ${{ github.action_path }}/main.sh target
       shell: bash  
     - name: stale pr 
-      run: ${{ github.action_path }}/fun.sh stale
+      run: ${{ github.action_path }}/main.sh stale
       shell: bash 
     - name: merge pr  
       if: inputs.merge_pr == 'true'
-      run: ${{ github.action_path }}/fun.sh merge
+      run: ${{ github.action_path }}/main.sh merge
       shell: bash 
     - name: close pr  
       if: inputs.close_pr == 'true'
-      run: ${{ github.action_path }}/fun.sh close
+      run: ${{ github.action_path }}/main.sh close
       shell: bash       
       env:
         REPO_OWNER: ${{ inputs.owner }}
