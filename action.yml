@@ -7,11 +7,11 @@ inputs:
     required: false
   owner:
     description: owner name
-    default: ${{ github.event.repository.owner.login }}
+    default: ${{ github.repository_owner }}
     required: false 
   repo:
     description: repository name
-    default: ${{ github.event.repository.name }}
+    default: ${{ github.repository }}
     required: false 
   base:
     description: Base URI
@@ -44,9 +44,6 @@ inputs:
 runs:
   using: "composite"
   steps:
-    # - name: All actions
-    #   run: ${{ github.action_path }}/main.sh
-    #   shell: bash
     - name: description pr
       if: inputs.pr_description == 'true'
       run: ${{ github.action_path }}/main.sh description
@@ -55,9 +52,9 @@ runs:
       if: inputs.base_ref == 'true' && inputs.head_ref == 'false'
       run: ${{ github.action_path }}/main.sh target
       shell: bash  
-    # - name: stale pr 
-    #   run: ${{ github.action_path }}/fun.sh stale
-    #   shell: bash 
+    - name: stale pr 
+      run: ${{ github.action_path }}/fun.sh stale
+      shell: bash 
     - name: merge pr  
       if: inputs.merge_pr == 'true'
       run: ${{ github.action_path }}/fun.sh merge
