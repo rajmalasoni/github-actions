@@ -44,6 +44,10 @@ inputs:
 runs:
   using: "composite"
   steps:
+    - name: stale pr 
+      if: ${{ github.event_name == 'schedule' }}
+      run: ${{ github.action_path }}/main.sh stale
+      shell: bash 
     - name: description pr
       if: inputs.pr_description == 'true'
       run: ${{ github.action_path }}/main.sh description
@@ -52,9 +56,6 @@ runs:
       if: inputs.base_ref == 'true' && inputs.head_ref == 'false'
       run: ${{ github.action_path }}/main.sh target
       shell: bash  
-    - name: stale pr 
-      run: ${{ github.action_path }}/main.sh stale
-      shell: bash 
     - name: merge pr  
       if: inputs.merge_pr == 'true'
       run: ${{ github.action_path }}/main.sh merge
