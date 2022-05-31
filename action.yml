@@ -28,9 +28,6 @@ inputs:
   pr_body:
     description: PR body
     required: false
-  pr_description:
-    description: PR description
-    required: false  
   pr_number:
     description: PR number
     required: false
@@ -49,7 +46,7 @@ runs:
       run: ${{ github.action_path }}/main.sh stale
       shell: bash 
     - name: description pr
-      if: inputs.pr_description == 'true'
+      if: ${{ !inputs.pr_body }}
       run: ${{ github.action_path }}/main.sh description
       shell: bash
     - name: target pr  
@@ -71,7 +68,6 @@ runs:
         HEAD_REF: ${{ inputs.head_ref }}
         BASE_REF: ${{ inputs.base_ref }}
         PR_BODY : ${{ inputs.pr_body }} 
-        PR_DESCRIPTION: ${{ inputs.pr_description }}
         PR_NUMBER: ${{ inputs.pr_number }}
         MERGE_PR: ${{ inputs.merge_pr }}
         CLOSE_PR: ${{ inputs.close_pr }}

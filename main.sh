@@ -3,7 +3,6 @@
 MERGE_PR="$MERGE_PR"
 CLOSE_PR="$CLOSE_PR"
 PR_BODY="$PR_BODY"
-PR_DESCRIPTION="$PR_DESCRIPTION"
 BASE="$BASE_REF"
 HEAD="$HEAD_REF"
 SEP="&&"
@@ -94,14 +93,12 @@ esac
 
 # Description
 description() {
-case "$PR_DESCRIPTION" in
-  "true") 
+if [[ ! $PR_BODY ]]; then
     echo "PR has No valied description" 
     curl -X POST -u $owner:$token $BASE_URI/repos/$repo/issues/$pull_number/comments \
     -d '{"body":"No Description on PR body. Please add valid description."}'
     curl -X PATCH -u $owner:$token $BASE_URI/repos/$repo/pulls/$pull_number \
     -d '{ "state": "closed" }'
-  ;;
-esac  
+fi    
 }
 "$@"
