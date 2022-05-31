@@ -2,10 +2,11 @@
 
 MERGE_PR="$MERGE_PR"
 CLOSE_PR="$CLOSE_PR"
-PR_BODY="$PR_BODY"
+PR_DESCRIPTION="$PR_DESCRIPTION"
 BASE="$BASE_REF"
 HEAD="$HEAD_REF"
 SEP="&&"
+STALE_DAYS=$STALE_DAYS
 
 # for curl API
 token="$GITHUB_TOKEN"
@@ -26,6 +27,8 @@ live_date=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
 convert_live_date=$(date -u -d "$live_date" +%s)
 convert_pr_updated_at=$(date -u -d "$pr_updated_at" +%s)
 DIFFERENCE=$((convert_live_date - convert_pr_updated_at))
+SECONDSPERDAY=86400
+STALE_CLOSE=$(( STALE_DAYS * SECONDSPERDAY ))
 
 echo "live date: $live_date"
 echo "convert live date: $convert_live_date"
@@ -33,22 +36,19 @@ echo "pr updated at: $pr_updated_at"
 echo "convert pr updated date: $convert_pr_updated_at"  
 echo "difference time: $DIFFERENCE"
 echo "pr number: $pr_number"
-echo "comments_url: $comments_url"
-
-#time
-two_weeks=1209600 # 14 days
+echo "Days Before Close in seconds: $STALE_CLOSE"
 
 case $((
-(DIFFERENCE < two_weeks) * 1 +
-(DIFFERENCE > two_weeks) * 2)) in
+(DIFFERENCE < STALE_CLOSE) * 1 +
+(DIFFERENCE > STALE_CLOSE) * 2)) in
 (1) echo "This PR is active." ;;
-(2) echo "This PR is stale and close because it has been open from 14 days with no activity."
+(2) echo "This PR is stale and close because it has been open from $STALE_DAYS days with no activity."
 
   curl -X PATCH -u $owner:$token $pr_number \
   -d '{ "state": "closed" }'
 
   curl -X POST -u $owner:$token $comments_url \
-  -d '{"body":"This PR was closed because it has been stalled for 14 days with no activity."}'
+  -d '{"body":"This PR was closed because it has been stalled and with no activity."}'
   ;;
 esac  
 
@@ -93,12 +93,14 @@ esac
 
 # Description
 description() {
-if [[ ! $PR_BODY ]]; then
+case "$PR_DESCRIPTION" in
+  "true") 
     echo "PR has No valied description" 
     curl -X POST -u $owner:$token $BASE_URI/repos/$repo/issues/$pull_number/comments \
     -d '{"body":"No Description on PR body. Please add valid description."}'
     curl -X PATCH -u $owner:$token $BASE_URI/repos/$repo/pulls/$pull_number \
     -d '{ "state": "closed" }'
-fi    
+  ;;
+esac  
 }
 "$@"
