@@ -38,16 +38,19 @@ inputs:
     description: PR number
     required: false  
   stale_days:
-    description: days for close stale pr
-    required: false     
+    description: stale pr
+    required: false  
+  close_days:
+    description: close stale pr
+    required: false      
     
 runs:
   using: "composite"
   steps:
-    # - name: stale pr 
-    #   if: ${{ github.event_name == 'schedule' }}
-    #   run: ${{ github.action_path }}/main.sh stale
-    #   shell: bash 
+    - name: stale pr 
+      # if: ${{ github.event_name == 'schedule' }}
+      run: ${{ github.action_path }}/main.sh stale
+      shell: bash 
     - name: description pr
       if: inputs.pr_description == 'true'
       run: ${{ github.action_path }}/main.sh description
@@ -75,5 +78,6 @@ runs:
         MERGE_PR: ${{ inputs.merge_pr }}
         CLOSE_PR: ${{ inputs.close_pr }}
         STALE_DAYS: ${{ inputs.stale_days }}
+        CLOSE_DAYS: ${{ inputs.close_days }}
 
 
