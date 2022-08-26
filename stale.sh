@@ -49,7 +49,6 @@ then
    echo "This PR is active. Don't close PR"
 
 else [ $DIFFERENCE -gt $fifteen_days ]
-then
    echo "This PR is stale because it has been open 15 days with no activity."
    curl -X POST -u $owner:$token $label \
   -d '{ "labels":["Stale"] }'
