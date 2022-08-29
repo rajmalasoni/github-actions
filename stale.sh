@@ -14,6 +14,7 @@ pull_number="$PR_NUMBER"
 
 pr_number=$(curl -X GET -u $owner:$token $BASE_URI/repos/$repo/pulls | jq -r '.[-1].url')
 issue_number=$(curl -X GET -u $owner:$token $BASE_URI/repos/$repo/issues | jq -r '.[-1].url')
+labels=$(curl -X GET -u $owner:$token $BASE_URI/repos/$repo/issues | jq -r '.[-1].url')
 
 pr_created_at=$(curl -X GET -u $owner:$token $BASE_URI/repos/$repo/pulls | jq -r '.[-1].created_at')
 pr_updated_at=$(curl -X GET -u $owner:$token $BASE_URI/repos/$repo/pulls | jq -r '.[-1].updated_at')
@@ -28,19 +29,20 @@ convert_live_date=$(date -u -d "$live_date" +%s)
 convert_pr_updated_at=$(date -u -d "$pr_updated_at" +%s)
 convert_label_created_at=$(date -u -d "$label_created_at" +%s)
 
-DIFFERENCE=$((convert_live_date - convert_pr_updated_at))
-DIFFERENCE_LABEL=$((convert_live_date - convert_label_created_at))
+UpdatedTime=$((convert_live_date - convert_pr_updated_at))
+LabelTime=$((convert_live_date - convert_label_created_at))
 
 #time
 
 SECONDSPERDAY=86400    #24 hrs
 STALE_LABEL=$(( STALE_DAYS * SECONDSPERDAY ))
 STALE_CLOSE=$(( CLOSE_DAYS * SECONDSPERDAY ))
-# STALE_LABEL=15
-# STALE_CLOSE=5
+STALE_LABEL=100
+STALE_CLOSE=120
 
 # five_days=100
 # fifteen_days=120
+onemin=60
 
 echo "Days Before Stale in seconds: $STALE_LABEL"
 echo "Days Before Close in seconds: $STALE_CLOSE"
@@ -50,8 +52,6 @@ echo "issue number: $issue_number"
 echo "pr created at: $pr_created_at"
 echo "pr updated at: $pr_updated_at"
 echo "label created at: $label_created_at"
-echo "unlabel created at: $unlabel_created_at"
-
 echo "labels on pr: $label_on_pr"
 
 echo "--------------------"
@@ -59,23 +59,22 @@ echo "live date: $live_date"
 echo "convert live date: $convert_live_date"
 echo "convert pr updated at: $convert_pr_updated_at" 
 echo "convert label created at: $convert_label_created_at"  
-echo "difference updateAt-labelCreate: $updateAt_labelCreate"
 
-echo "difference time: $DIFFERENCE"
-echo "difference label time: $DIFFERENCE_LABEL"
+echo "UpdatedTime: $UpdatedTime"
+echo "LabelTime: $LabelTime"
 
 label="Stale"
 
 stale_label() 
 {  
 
-if [ $DIFFERENCE -lt $STALE_LABEL ]
+if [ $UpdatedTime -lt $STALE_LABEL ]
 then
    echo "This PR is active. Don't close PR"
 
-else [ $DIFFERENCE -gt $STALE_LABEL ]
+else [ $UpdatedTime -gt $STALE_LABEL ]
    echo "This PR is stale because it has been open 15 days with no activity."
-   curl -X POST -u $owner:$token $label \
+   curl -X POST -u $owner:$token $labels \
   -d '{ "labels":["Stale"] }'
 
   curl -X POST -u $owner:$token $comments_url \
@@ -88,7 +87,7 @@ fi
 stale_close()
 {
 
-if [ $DIFFERENCE_LABEL -gt $STALE_CLOSE ]
+if [ $LabelTime -gt $STALE_CLOSE ]
 then
    echo "This PR is staled and closed"
 
@@ -113,5 +112,11 @@ then
   stale_label
 fi
 
+
+if [ $UpdatedTime -lt $onemin ];
+then
+  curl -X DELETE -u $owner:$token $labels \
+  -d '{ "labels":["Stale"] }'
+fi
 
 "$@"
