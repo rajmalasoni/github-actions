@@ -11,38 +11,63 @@ repo="$REPO_NAME"
 pull_number="$PR_NUMBER"
 
 # Stale Pull Request
-stale() {
-
-pr_updated_at=$(curl -X GET -u $owner:$token $BASE_URI/repos/$repo/pulls | jq -r '.[-1].updated_at')
 
 pr_number=$(curl -X GET -u $owner:$token $BASE_URI/repos/$repo/pulls | jq -r '.[-1].url')
 issue_number=$(curl -X GET -u $owner:$token $BASE_URI/repos/$repo/issues | jq -r '.[-1].url')
-comments_url=$(curl -X GET -u $owner:$token $BASE_URI/repos/$repo/pulls | jq -r '.[-1].comments_url')
-label=$(curl -X GET -u $owner:$token $BASE_URI/repos/$repo/issues | jq -r '.[-1].url')
+
+pr_created_at=$(curl -X GET -u $owner:$token $BASE_URI/repos/$repo/pulls | jq -r '.[-1].created_at')
+pr_updated_at=$(curl -X GET -u $owner:$token $BASE_URI/repos/$repo/pulls | jq -r '.[-1].updated_at')
+label_created_at=$(curl -X GET -u $owner:$token $issue_number/events | jq -r '.[-1] | select(.event == "labeled") | select( .label.name == "Stale") | .created_at')
+
+# filter stale label is added or not on PR
+label_on_pr=$(curl -X GET -u $owner:$token $BASE_URI/repos/$repo/issues | jq -r '.[].labels[].name')
+
 
 live_date=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
 convert_live_date=$(date -u -d "$live_date" +%s)
 convert_pr_updated_at=$(date -u -d "$pr_updated_at" +%s)
+convert_label_created_at=$(date -u -d "$label_created_at" +%s)
+
 DIFFERENCE=$((convert_live_date - convert_pr_updated_at))
-SECONDSPERDAY=86400
-STALE_LABEL=$(( STALE_DAYS * SECONDSPERDAY ))
-STALE_CLOSE=$(( CLOSE_DAYS * SECONDSPERDAY ))
+DIFFERENCE_LABEL=$((convert_live_date - convert_label_created_at))
+
+#time
+
+# SECONDSPERDAY=86400    #24 hrs
+# STALE_LABEL=$(( STALE_DAYS * SECONDSPERDAY ))
+# STALE_CLOSE=$(( CLOSE_DAYS * SECONDSPERDAY ))
 # STALE_LABEL=15
 # STALE_CLOSE=5
-#time
-aday=86400 #24 hrs
-five_days=100
-fifteen_days=150
-sixteen_days=864000
 
+five_days=100
+fifteen_days=120
+
+# echo "Days Before Stale in seconds: $STALE_LABEL"
+# echo "Days Before Close in seconds: $STALE_CLOSE"
+
+echo "pr number: $pr_number"
+echo "issue number: $issue_number"
+echo "pr created at: $pr_created_at"
+echo "pr updated at: $pr_updated_at"
+echo "label created at: $label_created_at"
+echo "unlabel created at: $unlabel_created_at"
+
+echo "labels on pr: $label_on_pr"
+
+echo "--------------------"
 echo "live date: $live_date"
 echo "convert live date: $convert_live_date"
-echo "pr updated at: $pr_updated_at"
-echo "convert pr updated date: $convert_pr_updated_at"  
+echo "convert pr updated at: $convert_pr_updated_at" 
+echo "convert label created at: $convert_label_created_at"  
+echo "difference updateAt-labelCreate: $updateAt_labelCreate"
+
 echo "difference time: $DIFFERENCE"
-echo "pr number: $pr_number"
-echo "Days Before Stale in seconds: $STALE_LABEL"
-echo "Days Before Close in seconds: $STALE_CLOSE"
+echo "difference label time: $DIFFERENCE_LABEL"
+
+label="Stale"
+
+stale_label() 
+{  
 
 if [ $DIFFERENCE -lt $fifteen_days ]
 then
@@ -50,30 +75,43 @@ then
 
 else [ $DIFFERENCE -gt $fifteen_days ]
    echo "This PR is stale because it has been open 15 days with no activity."
-   curl -X POST -u $owner:$token $label \
-  -d '{ "labels":["Stale"] }'
+  #  curl -X POST -u $owner:$token $label \
+  # -d '{ "labels":["Stale"] }'
 
-  curl -X POST -u $owner:$token $comments_url \
-  -d '{"body":"This PR is stale because it has been open 15 days with no activity. Remove stale label or comment or this will be closed in 5 days."}' 
+  # curl -X POST -u $owner:$token $comments_url \
+  # -d '{"body":"This PR is stale because it has been open 15 days with no activity. Remove stale label or comment or this will be closed in 5 days."}' 
 
 fi
 
-# case $((
-# (DIFFERENCE < fifteen_days) * 1 +
-# (DIFFERENCE > fifteen_days && DIFFERENCE < sixteen_days) * 2)) in
-# (1) echo "This PR is active."
-#   # curl -X DELETE -u $owner:$token $issue_number/labels/stale
-# ;;
-# (2) echo "This PR is Stale."
-#   curl -X POST -u $owner:$token $label \
-#   -d '{ "labels":["Stale"] }'
+}
 
-#   curl -X POST -u $owner:$token $comments_url \
-#   -d '{"body":"This PR is stale because it has been open 15 days with no activity. Remove stale label or comment or this will be closed in 2 days."}' 
-# ;;
+stale_close()
+{
 
-# esac  
+if [ $DIFFERENCE_LABEL -gt $five_days ]
+then
+   echo "This PR is staled and closed"
+
+  # curl -X PATCH -u $owner:$token $pr_number \
+  # -d '{ "state": "closed" }'
+
+  # curl -X POST -u $owner:$token $comments_url \
+  # -d '{"body":"This PR was closed because it has been stalled for 5 days with no activity."}'
+
+fi
 
 }
+
+
+
+if [ "$label_on_pr" = "$label" ];
+then
+  stale_close
+fi
+if [ "$label_on_pr" != "$label" ];
+then
+  stale_label
+fi
+
 
 "$@"
