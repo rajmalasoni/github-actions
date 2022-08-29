@@ -33,17 +33,17 @@ DIFFERENCE_LABEL=$((convert_live_date - convert_label_created_at))
 
 #time
 
-# SECONDSPERDAY=86400    #24 hrs
-# STALE_LABEL=$(( STALE_DAYS * SECONDSPERDAY ))
-# STALE_CLOSE=$(( CLOSE_DAYS * SECONDSPERDAY ))
+SECONDSPERDAY=86400    #24 hrs
+STALE_LABEL=$(( STALE_DAYS * SECONDSPERDAY ))
+STALE_CLOSE=$(( CLOSE_DAYS * SECONDSPERDAY ))
 # STALE_LABEL=15
 # STALE_CLOSE=5
 
-five_days=100
-fifteen_days=120
+# five_days=100
+# fifteen_days=120
 
-# echo "Days Before Stale in seconds: $STALE_LABEL"
-# echo "Days Before Close in seconds: $STALE_CLOSE"
+echo "Days Before Stale in seconds: $STALE_LABEL"
+echo "Days Before Close in seconds: $STALE_CLOSE"
 
 echo "pr number: $pr_number"
 echo "issue number: $issue_number"
@@ -69,17 +69,17 @@ label="Stale"
 stale_label() 
 {  
 
-if [ $DIFFERENCE -lt $fifteen_days ]
+if [ $DIFFERENCE -lt $STALE_LABEL ]
 then
    echo "This PR is active. Don't close PR"
 
-else [ $DIFFERENCE -gt $fifteen_days ]
+else [ $DIFFERENCE -gt $STALE_LABEL ]
    echo "This PR is stale because it has been open 15 days with no activity."
-  #  curl -X POST -u $owner:$token $label \
-  # -d '{ "labels":["Stale"] }'
+   curl -X POST -u $owner:$token $label \
+  -d '{ "labels":["Stale"] }'
 
-  # curl -X POST -u $owner:$token $comments_url \
-  # -d '{"body":"This PR is stale because it has been open 15 days with no activity. Remove stale label or comment or this will be closed in 5 days."}' 
+  curl -X POST -u $owner:$token $comments_url \
+  -d '{"body":"This PR is stale because it has been open 15 days with no activity. Remove stale label or comment or this will be closed in 5 days."}' 
 
 fi
 
@@ -88,15 +88,15 @@ fi
 stale_close()
 {
 
-if [ $DIFFERENCE_LABEL -gt $five_days ]
+if [ $DIFFERENCE_LABEL -gt $STALE_CLOSE ]
 then
    echo "This PR is staled and closed"
 
-  # curl -X PATCH -u $owner:$token $pr_number \
-  # -d '{ "state": "closed" }'
+  curl -X PATCH -u $owner:$token $pr_number \
+  -d '{ "state": "closed" }'
 
-  # curl -X POST -u $owner:$token $comments_url \
-  # -d '{"body":"This PR was closed because it has been stalled for 5 days with no activity."}'
+  curl -X POST -u $owner:$token $comments_url \
+  -d '{"body":"This PR was closed because it has been stalled for 5 days with no activity."}'
 
 fi
 
