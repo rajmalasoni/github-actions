@@ -1,4 +1,4 @@
-FROM python:3-slim AS builder
-COPY main.py /app
-WORKDIR /app
-CMD ["/app/main.py"]
+FROM python:3.8-slim-buster
+WORKDIR /
+COPY main.py ./
+CMD [ "python", "./main.py"]
