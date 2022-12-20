@@ -63,7 +63,7 @@ def target():
         print("target API comment status code: {}".format(res.status_code))
 
 def description():
-    if PR_DESCRIPTION == 'True':
+    if PR_DESCRIPTION != 'True':
         url = BASE_URI + "/repos/" + repo + "/pulls/" + str(pull_number)
         data = json.dumps({"state": "closed"})
         headers = {'Authorization': 'token ' + token}
