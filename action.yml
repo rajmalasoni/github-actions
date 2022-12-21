@@ -23,7 +23,7 @@ inputs:
     required: false
   base_ref:
     description: Base Refer branch
-    default: ${{ contains(github.base_ref, 'master') }}
+    default: ${{ contains(github.base_ref, 'main') }}
     required: false  
   pr_description:
     description: PR description
