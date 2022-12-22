@@ -66,12 +66,12 @@ def description():
     data = json.dumps({"state": "closed"})
     headers = {'Authorization': 'token ' + token}
     res = requests.patch(url, data, headers=headers)
-    print(f"description API status code: {}".format(res.status_code))
+    print("description API status code: {}".format(res.status_code))
 
     url = BASE_URI + "/repos/" + repo + "/issues/" + str(pull_number) + "/comments"
     data = json.dumps({"body": "No Description on PR body. Please add valid description."})
     res = requests.post(url, data, headers=headers)
-    print(f"description API comment status code: {}".format(res.status_code))
+    print("description API comment status code: {}".format(res.status_code))
 
 
 if __name__ == '__main__':
