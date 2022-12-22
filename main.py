@@ -2,18 +2,19 @@ import requests
 import json
 import os
 
+# API
+BASE_URI = "https://api.github.com"
+owner = os.environ.get("REPO_OWNER")
+repo = os.environ.get("REPO_NAME")
+token = os.environ.get("GITHUB_TOKEN")
+pull_number = os.environ.get("PR_NUMBER")
 
+# values
 MERGE_PR = os.environ.get("MERGE_PR")
 CLOSE_PR = os.environ.get("CLOSE_PR")
 PR_DESCRIPTION = os.environ.get("PR_DESCRIPTION")
 BASE = os.environ.get("BASE_REF")
 HEAD = os.environ.get("HEAD_REF")
-SEP = "&&"
-token = os.environ.get("GITHUB_TOKEN")
-BASE_URI = "https://api.github.com"
-owner = os.environ.get("REPO_OWNER")
-repo = os.environ.get("REPO_NAME")
-pull_number = os.environ.get("PR_NUMBER")
 
 def merge():
     print("PR has Approved.")
@@ -65,30 +66,22 @@ def description():
     data = json.dumps({"state": "closed"})
     headers = {'Authorization': 'token ' + token}
     res = requests.patch(url, data, headers=headers)
-    print(f"target API status code: {res}")
+    print(f"description API status code: {}".format(res.status_code))
 
     url = BASE_URI + "/repos/" + repo + "/issues/" + str(pull_number) + "/comments"
     data = json.dumps({"body": "No Description on PR body. Please add valid description."})
     res = requests.post(url, data, headers=headers)
-    print(f"description API comment status code: {res}")
+    print(f"description API comment status code: {}".format(res.status_code))
 
 
 if __name__ == '__main__':
     print('start')
-    if MERGE_PR == True:
-        merge()
-    else:
-        print('false merge pr')    
-    if CLOSE_PR == True:
-        close()
-    else:
-        print('false close pr')    
-    if BASE == True and  HEAD == False:
-        target()
-    else:
-        print("target is fine")    
-    if PR_DESCRIPTION == True:
-        description()
-    else:
-        print("pr description false")    
+    if MERGE_PR.__eq__('true'):
+        merge()  
+    if CLOSE_PR.__eq__('true'):
+        close()  
+    if BASE.__eq__('true') and  HEAD.__eq__('false'):
+        target() 
+    if PR_DESCRIPTION.__eq__('true'):
+        description() 
     print('end')
