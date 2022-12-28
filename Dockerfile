@@ -5,7 +5,6 @@ WORKDIR /
 COPY Pipfile Pipfile.lock ./
 RUN python -m pip install --upgrade pip
 RUN pip install pipenv && pipenv install --system --deploy --ignore-pipfile
-RUN pip install PyGithub
 
 COPY main.py ./
 CMD [ "python", "/main.py"]
