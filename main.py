@@ -1,13 +1,15 @@
 import requests
 import json
 import os
+from github import Github
 
-# API
-BASE_URI = "https://api.github.com"
-owner = os.environ.get("REPO_OWNER")
-repo = os.environ.get("REPO_NAME")
-token = os.environ.get("GITHUB_TOKEN")
+access_token = os.environ.get("GITHUB_TOKEN")
+g = Github(access_token)
+repo_name = os.environ.get("REPO_NAME")
 pull_number = os.environ.get("PR_NUMBER")
+
+repo = g.get_repo(repo_name)
+pr = repo.get_pull(pull_number)
 
 # values
 MERGE_PR = os.environ.get("MERGE_PR")
@@ -19,60 +21,29 @@ HEAD = os.environ.get("HEAD_REF")
 def merge():
     print("PR has Approved.")
     # merge API
-    url = BASE_URI+"/repos/" + repo + "/pulls/" + str(pull_number) + "/merge"
-    data = json.dumps({"merged": True})
-    headers = {'Authorization': 'token '+token}
-    res = requests.put(url, data, headers=headers)
-    print("merge API status code: {}".format(res.status_code) )
-
+    pr.merge(merge_method = 'merge', commit_message ='Pull Request Approved and Merged!')
     #  merge API comment
-    url = BASE_URI+"/repos/" + repo + "/issues/" + str(pull_number) + "/comments"
-    data = json.dumps({"body": "Pull Request Merged!"})
-    res = requests.post(url, data, headers=headers)
-    print("merge API comment status code: {}".format(res.status_code))
-
+    pr.create_issue_comment('Pull Request Approved and Merged!')
 
 def close():
     print("PR has Closed manually by comments.")
     # closed API
-    url = BASE_URI + "/repos/" + repo + "/pulls/" + str(pull_number)
-    data = json.dumps({ "state": "closed" })
-    headers = {'Authorization': 'token ' + token}
-    res = requests.patch(url, data, headers=headers)
-    print("Close API status code: {}".format(res.status_code))
-
+    pr.edit(state='closed')
     # closed API comment
-    url = BASE_URI + "/repos/" + repo + "/issues/" + str(pull_number) + "/comments"
-    data = json.dumps({"body":"Pull Request Closed!"})
-    res = requests.post(url, data, headers=headers)
-    print("close API comment status code: {}".format(res.status_code))
-
+    pr.create_issue_comment('Pull Request Closed!')
 
 def target():
-    url = BASE_URI + "/repos/" + repo + "/pulls/" + str(pull_number)
-    data = json.dumps({"state": "closed"})
-    headers = {'Authorization': 'token ' + token}
-    res = requests.patch(url, data, headers=headers)
-    print("target API status code: {}".format(res.status_code))
-
-    url = BASE_URI + "/repos/" + repo + "/issues/" + str(pull_number) + "/comments"
-    data = json.dumps({"body": "Do not accept PR target from feature branch to master branch."})
-    res = requests.post(url, data, headers=headers)
-    print("target API comment status code: {}".format(res.status_code))
+    # API comment
+    pr.create_issue_comment('Do not accept PR target from feature branch to master branch.')
+    # closed API
+    pr.edit(state='closed')
 
 
 def description():
-    url = BASE_URI + "/repos/" + repo + "/pulls/" + str(pull_number)
-    data = json.dumps({"state": "closed"})
-    headers = {'Authorization': 'token ' + token}
-    res = requests.patch(url, data, headers=headers)
-    print("description API status code: {}".format(res.status_code))
-
-    url = BASE_URI + "/repos/" + repo + "/issues/" + str(pull_number) + "/comments"
-    data = json.dumps({"body": "No Description on PR body. Please add valid description."})
-    res = requests.post(url, data, headers=headers)
-    print("description API comment status code: {}".format(res.status_code))
-
+    # API comment
+    pr.create_issue_comment('No Description on PR body. Please add valid description.')
+    # closed API
+    pr.edit(state='closed')
 
 if __name__ == '__main__':
     print('start')
