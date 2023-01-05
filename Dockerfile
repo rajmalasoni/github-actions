@@ -5,7 +5,7 @@ WORKDIR /
 COPY Pipfile Pipfile.lock ./
 RUN python -m pip install --upgrade pip
 RUN pip install pipenv
-# RUN pipenv install requests && pipenv install PyGithub
+RUN pipenv install PyGithub
 
 
 COPY main.py ./
