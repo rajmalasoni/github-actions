@@ -7,6 +7,7 @@ RUN python -m pip install --upgrade pip
 RUN pip install pipenv
 COPY Pipfile Pipfile.lock ./
 RUN pipenv install PyGithub
+RUN pip3 install PyGithub
 
 
 COPY main.py ./
