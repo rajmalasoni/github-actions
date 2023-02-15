@@ -1,5 +1,5 @@
-name: "Main action file of composite actions"
-description: "composite actions"
+name: "Main action file of Docker container actions"
+description: "Docker container actions"
 
 inputs:
   GITHUB_TOKEN:
