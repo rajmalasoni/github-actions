@@ -1,0 +1,29 @@
+name: 'PR Description and Target Checker'
+on:
+  pull_request:
+    types: [opened, edited, reopened]
+      
+permissions: write-all    
+      
+env:
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  PR_NUMBER: ${{ github.event.number }}
+  PR_DESCRIPTION : ${{ !github.event.pull_request.body }} 
+  REPO_OWNER: ${{ github.repository_owner }}
+  REPO_NAME: ${{ github.repository }}
+  HEAD_REF: ${{ contains(github.head_ref, 'release') }}
+  BASE_REF: ${{ contains(github.base_ref, 'master') }}  
+      
+jobs:
+  Check-PR:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Check PR Description and Target
+        uses: ./
+        with:
+          pr_number: ${{ github.event.number }}
+          pr_description: ${{ !github.event.pull_request.body }}
+          repo: ${{ github.repository }}
+          owner: ${{ github.repository_owner }}        

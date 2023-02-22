@@ -1,0 +1,26 @@
+name: 'Merge and close PR using slash-commands'
+on: 
+  issue_comment:
+
+permissions: write-all
+  
+env:
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  PR_NUMBER: ${{ github.event.issue.number }} 
+  REPO_OWNER: ${{ github.repository_owner }}
+  REPO_NAME: ${{ github.repository }}
+  MERGE_PR: ${{ github.event.comment.body == '/Approved' }}
+  CLOSE_PR: ${{ github.event.comment.body == '/Close' }}
+  
+jobs:
+  Merge_and_Close-PR:  
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Merge and close PR
+        uses: ./
+        with:
+          pr_number: ${{ github.event.issue.number }} 
+          merge_pr: ${{ github.event.comment.body == '/Approved' }}
+          close_pr: ${{ github.event.comment.body == '/Close' }}
