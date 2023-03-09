@@ -4,19 +4,17 @@ on:
   pull_request:
     types: [closed]
     branches:
-      - master
+      - devops/j4jDoRd8/1425
 
 jobs:
   create-tag:
     runs-on: ubuntu-latest
     
-    steps:
+    steps: 
       - name: Checkout code
         uses: actions/checkout@v3
-
+        
       - name: Create tag
-        run: |
-          git tag $(cat VERSION)
-          git push origin $(cat VERSION)
+        uses: imp-ress-ico/github-actions/actions@devops/j4jDoRd8/1425
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
