@@ -48,31 +48,6 @@ for pr in pulls:
 print("pr_updated_at:",pr.updated_at)
 print("pr_labels:",pr.labels)
 
-def handle_pull_request_update(pull_number):
-
-    # Get the pull request object
-    pull_request = repo.get_pull(number=pull_number)
-
-    # Check if the pull request is open
-    if pull_request.state != "open":
-        return
-
-    # Check if the pull request has the stale label
-    if "stale" not in [label.name for label in pull_request.labels]:
-        return
-
-    # Get the stale label object
-    stale_label = repo.get_label(name="stale")
-
-    # Remove the stale label from the pull request
-    pull_request.remove_from_labels(stale_label)
-
-    # Create a comment on the pull request
-    pull_request.create_issue_comment("The 'stale' label has been removed.")
-
-# Call the function with the pull request number to handle the update
-handle_pull_request_update(pull_number)
-
 def merge():
     print("PR has Approved.")
     # merge API
