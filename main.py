@@ -22,6 +22,7 @@ print("repo_name:",repo)
 print("pr_number:",pr.number)
 print("pulls:",pulls)
 
+# Add "Stale" label to the PR if no active from 15 days
 stale_days = 15
 now = datetime.now()
 for pr in pulls:
@@ -32,7 +33,7 @@ for pr in pulls:
         pr.create_issue_comment('This PR is stale because it has been open 15 days with no activity. Remove stale label or comment or this will be closed in 2 days.')
         pr.add_to_labels('Stale')
 
-
+# close staled PR if 2 days of no activity
 stale_close_days = 2
 for pr in pulls:
     # check if the stale label is applied on PR
@@ -46,6 +47,20 @@ for pr in pulls:
 
 print("pr_updated_at:",pr.updated_at)
 print("pr_labels:",pr.labels)
+
+# Get the stale label object
+stale_label = repo.get_label(name="Stale")
+# Check if the pull request is open
+if pr.state != "open":
+    return
+# Check if the pull request has the stale label
+if "Stale" not in [label.name for label in pr.labels]:
+    return
+
+# Remove the stale label from the pull request
+pr.remove_from_labels(stale_label)
+# Create a comment on the pull request
+pr.create_issue_comment("The 'Stale' label has been removed.")
 
 def merge():
     print("PR has Approved.")
