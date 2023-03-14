@@ -1,0 +1,24 @@
+name: Stale Pull Requests
+on:
+  # schedule:
+  #   - cron: '0 09 * * *'  
+  workflow_dispatch:
+
+permissions: write-all
+
+env:
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
+  REPO_NAME: ${{ github.repository }}
+  PR_NUMBER: ${{ github.event.number }}
+
+jobs:
+  Stale-PR:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Stale PR
+        uses: ./
+        with:
+          repo: ${{ github.repository }}
+          pr_number: ${{ github.event.number }}      
