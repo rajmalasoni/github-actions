@@ -38,12 +38,6 @@ inputs:
   close_pr:
     description: PR number
     required: false  
-  stale_days:
-    description: stale pr
-    required: false  
-  close_days:
-    description: close stale pr
-    required: false    
     
 runs:
   using: 'docker'
@@ -58,5 +52,3 @@ runs:
     PR_NUMBER: ${{ inputs.pr_number }}
     MERGE_PR: ${{ inputs.merge_pr }}
     CLOSE_PR: ${{ inputs.close_pr }}
-    STALE_DAYS: ${{ inputs.stale_days }}
-    CLOSE_DAYS: ${{ inputs.close_days }}

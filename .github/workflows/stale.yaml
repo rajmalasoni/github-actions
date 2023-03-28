@@ -1,8 +1,7 @@
 name: Stale Pull Requests
 on:
-  # schedule:
-  #   - cron: '0 09 * * *'  
-  workflow_dispatch:
+  schedule:
+    - cron: '30 03 * * *' # scheduler runs every day at 9:00am IST
 
 permissions: write-all
 

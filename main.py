@@ -30,7 +30,7 @@ for pr in pulls:
     # check if the time difference is greater than the stale days
     if time_diff > timedelta(days=stale_days):
         print("Pull request", pr.number, "is stale!")
-        pr.create_issue_comment('This PR is stale because it has been open 15 days with no activity. Remove stale label or comment or this will be closed in 2 days.')
+        pr.create_issue_comment('This PR is stale because it has been open 15 days with no activity. Remove stale label or comment/update PR otherwise this will be closed in next 2 days.')
         pr.add_to_labels('Stale')
 
 # close staled PR if 2 days of no activity
