@@ -18,18 +18,18 @@ if pulls.totalCount == 0:
     exit()
 
 # pull_number = int(os.environ.get("PR_NUMBER"))
-pull_number = repo.get_pull(int(os.environ['PR_NUMBER']))
+# pull_number = repo.get_pull(int(os.environ['PR_NUMBER']))
 MERGE_PR = os.environ.get("MERGE_PR")
 CLOSE_PR = os.environ.get("CLOSE_PR")
 PR_DESCRIPTION = os.environ.get("PR_DESCRIPTION")
 BASE = os.environ.get("BASE_REF")
 HEAD = os.environ.get("HEAD_REF")
 
-pr = repo.get_pull(pull_number)
+# pr = repo.get_pull(pull_number)
 
 print("repo_name_wf:",repo_name)
-print("pr-num-wf:",pull_number)
-print("pr_number:",pr.number)
+# print("pr-num-wf:",pull_number)
+# print("pr_number:",pr.number)
 
 # Add "Stale" label to the PR if no active from 15 days
 stale_days = 15
@@ -57,42 +57,73 @@ for pr in pulls:
 print("pr_updated_at:",pr.updated_at)
 print("pr_labels:",pr.labels)
 
-def merge():
-    print("PR has Approved.")
-    # merge API
-    pr.merge(merge_method = 'merge', commit_message ='Pull Request Approved and Merged!')
-    #  merge API comment
-    pr.create_issue_comment('Pull Request Approved and Merged!')
+merge_comment = '/Approved'
+# merge PR using comments
+for pull in pulls:
+    # Check if the comment trigger is in the pull request comments
+    for comment in pull.get_issue_comments():
+        if comment.body.startswith(merge_comment):
+            # Merge the pull request
+            pull.merge()
+            pull.create_issue_comment('Pull Request is Approved and Merged!')
 
-def close():
-    print("PR has Closed manually by comments.")
-    # closed API
-    pr.edit(state='closed')
-    # closed API comment
-    pr.create_issue_comment('Pull Request Closed!')   
+close_comment = '/Close'
+# close PR using comments
+for pull in pulls:
+    # Check if the comment trigger is in the pull request comments
+    for comment in pull.get_issue_comments():
+        if comment.body.startswith(close_comment):
+            # Close the pull request
+            pull.edit(state='closed')
+            pull.create_issue_comment('Pull Request Closed!')            
+
+# def merge():
+#     print("PR has Approved.")
+#     # merge API
+#     pr.merge(merge_method = 'merge', commit_message ='Pull Request Approved and Merged!')
+#     #  merge API comment
+#     pr.create_issue_comment('Pull Request Approved and Merged!')
+
+# def close():
+#     print("PR has Closed manually by comments.")
+#     # closed API
+#     pr.edit(state='closed')
+#     # closed API comment
+#     pr.create_issue_comment('Pull Request Closed!')   
 
 # Check if the pull request targets the master branch directly
-def target():
-    # API comment
-    pr.create_issue_comment('Do not accept PR target from feature branch to master branch.')
-    # closed API
-    pr.edit(state='closed')
+for pull in pulls:
+    # Check if the pull request targets the master branch directly
+    if pull.base.ref == 'master' and not pull.head.ref.startswith('release/'):
+        pull.edit(state='closed')
+        pull.create_issue_comment('Do not accept PR target from feature branch to master branch.')
+        
+# def target():
+#     # API comment
+#     pr.create_issue_comment('Do not accept PR target from feature branch to master branch.')
+#     # closed API
+#     pr.edit(state='closed')
 
 # Check if the pull request has a description
-def description():
-    # API comment
-    pr.create_issue_comment('No Description on PR body. Please add valid description.')
-    # closed API
-    pr.edit(state='closed')
+for pull in pulls:
+    if not pull.body:
+        pull.edit(state='closed')
+        pull.create_issue_comment('No Description on PR body. Please add valid description.')
 
-if __name__ == '__main__':
-    print('start')
-    if MERGE_PR.__eq__('true'):
-        merge()  
-    if CLOSE_PR.__eq__('true'):
-        close()  
-    if BASE.__eq__('true') and  HEAD.__eq__('false'):
-        target() 
-    if PR_DESCRIPTION.__eq__('true'):
-        description() 
-    print('end')
+# def description():
+#     # API comment
+#     pr.create_issue_comment('No Description on PR body. Please add valid description.')
+#     # closed API
+#     pr.edit(state='closed')
+
+# if __name__ == '__main__':
+#     print('start')
+#     if MERGE_PR.__eq__('true'):
+#         merge()  
+#     if CLOSE_PR.__eq__('true'):
+#         close()  
+#     if BASE.__eq__('true') and  HEAD.__eq__('false'):
+#         target() 
+#     if PR_DESCRIPTION.__eq__('true'):
+#         description() 
+#     print('end')
