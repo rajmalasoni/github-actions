@@ -17,7 +17,8 @@ if pulls.totalCount == 0:
     print('No open pull requests, exiting...')
     exit()
 
-pull_number = int(os.environ.get("PR_NUMBER"))
+# pull_number = int(os.environ.get("PR_NUMBER"))
+pull_number = repo.get_pull(int(os.environ['PR_NUMBER']))
 MERGE_PR = os.environ.get("MERGE_PR")
 CLOSE_PR = os.environ.get("CLOSE_PR")
 PR_DESCRIPTION = os.environ.get("PR_DESCRIPTION")
@@ -68,15 +69,16 @@ def close():
     # closed API
     pr.edit(state='closed')
     # closed API comment
-    pr.create_issue_comment('Pull Request Closed!')
+    pr.create_issue_comment('Pull Request Closed!')   
 
+# Check if the pull request targets the master branch directly
 def target():
     # API comment
     pr.create_issue_comment('Do not accept PR target from feature branch to master branch.')
     # closed API
     pr.edit(state='closed')
 
-
+# Check if the pull request has a description
 def description():
     # API comment
     pr.create_issue_comment('No Description on PR body. Please add valid description.')
