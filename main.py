@@ -5,6 +5,18 @@ from datetime import datetime, timedelta
 # env values
 g = Github(os.environ["GITHUB_TOKEN"])
 repo_name = os.environ.get("REPO_NAME")
+
+repo = g.get_repo(repo_name)
+pulls = repo.get_pulls(state='open')
+
+print("repo_name:",repo)
+print("pulls:",pulls)
+
+# Check if there are any open pull requests
+if pulls.totalCount == 0:
+    print('No open pull requests, exiting...')
+    exit()
+
 pull_number = int(os.environ.get("PR_NUMBER"))
 MERGE_PR = os.environ.get("MERGE_PR")
 CLOSE_PR = os.environ.get("CLOSE_PR")
@@ -12,15 +24,11 @@ PR_DESCRIPTION = os.environ.get("PR_DESCRIPTION")
 BASE = os.environ.get("BASE_REF")
 HEAD = os.environ.get("HEAD_REF")
 
-repo = g.get_repo(repo_name)
 pr = repo.get_pull(pull_number)
-pulls = repo.get_pulls(state='open')
 
 print("repo_name_wf:",repo_name)
 print("pr-num-wf:",pull_number)
-print("repo_name:",repo)
 print("pr_number:",pr.number)
-print("pulls:",pulls)
 
 # Add "Stale" label to the PR if no active from 15 days
 stale_days = 15
