@@ -14,20 +14,26 @@ if pulls.totalCount == 0:
     exit()
 
 
-# Get the pull request number from the environment variable
-pull_number_str = os.environ.get('PR_NUMBER')
-print(f"PR_NUMBER: {pull_number_str}")
+# # Get the pull request number from the environment variable
+# pull_number_str = os.environ.get('PR_NUMBER')
+# print(f"PR_NUMBER: {pull_number_str}")
 
-# Parse the pull request number as an integer
-pull_number = int(pull_number_str)
+# # Parse the pull request number as an integer
+# pull_number = int(pull_number_str)
+# print("pull_number:",pull_number)
+
+# # Get the pull request object
+# pull_request = repo.get_pull(pull_number)
+# print("pull_request:",pull_request)
+# pr = repo.get_pull(pull_number)
+# print("pr:",pr)
+# pull_number = int(os.environ.get("PR_NUMBER"))
+pull_number = os.environ.get('PR_NUMBER')
 print("pull_number:",pull_number)
 
-# Get the pull request object
-pull_request = repo.get_pull(pull_number)
-print("pull_request:",pull_request)
-pr = repo.get_pull(pull_number)
-print("pr:",pr)
-# pull_number = int(os.environ.get("PR_NUMBER"))
+pr = repo.get_pull(int(pull_number))
+print("pull_request:",pr)
+
 MERGE_PR = os.environ.get("MERGE_PR")
 CLOSE_PR = os.environ.get("CLOSE_PR")
 PR_DESCRIPTION = os.environ.get("PR_DESCRIPTION")
