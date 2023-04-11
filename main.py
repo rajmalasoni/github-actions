@@ -76,6 +76,14 @@ print("pr_updated_at:",pr.updated_at)
 print("pr_labels:",pr.labels)
 
 def merge():
+    for pull in pulls:
+        # Check if the comment trigger is in the pull request comments
+        for comment in pull.get_issue_comments():
+            if comment.body.startswith('/Approved'):
+                # Merge the pull request
+                pull.merge()
+                pull.create_issue_comment('Pull Request is Approved and Merged!')
+
     print("PR has Approved.")
     # merge API
     pr.merge(merge_method = 'merge', commit_message ='Pull Request Approved and Merged!')
@@ -83,24 +91,43 @@ def merge():
     pr.create_issue_comment('Pull Request Approved and Merged!')
 
 def close():
-    print("PR has Closed manually by comments.")
-    # closed API
-    pr.edit(state='closed')
-    # closed API comment
-    pr.create_issue_comment('Pull Request Closed!')
+    for pull in pulls:
+        # Check if the comment trigger is in the pull request comments
+        for comment in pull.get_issue_comments():
+            if comment.body.startswith('/Close'):
+                # Close the pull request
+                pull.edit(state='closed')
+                pull.create_issue_comment('Pull Request Closed!') 
+    # print("PR has Closed manually by comments.")
+    # # closed API
+    # pr.edit(state='closed')
+    # # closed API comment
+    # pr.create_issue_comment('Pull Request Closed!')
 
-def target():
-    # API comment
-    pr.create_issue_comment('Do not accept PR target from feature branch to master branch.')
-    # closed API
-    pr.edit(state='closed')
+# Check if the pull request targets the master branch directly
+for pull in pulls:
+    # Check if the pull request targets the master branch directly
+    if pull.base.ref == 'master' and not pull.head.ref.startswith('release/'):
+        pull.edit(state='closed')
+        pull.create_issue_comment('Do not accept PR target from feature branch to master branch.')
+
+# Check if the pull request has a description
+for pull in pulls:
+    if not pull.body:
+        pull.edit(state='closed')
+        pull.create_issue_comment('No Description on PR body. Please add valid description.')
+# def target():
+#     # API comment
+#     pr.create_issue_comment('Do not accept PR target from feature branch to master branch.')
+#     # closed API
+#     pr.edit(state='closed')
 
 
-def description():
-    # API comment
-    pr.create_issue_comment('No Description on PR body. Please add valid description.')
-    # closed API
-    pr.edit(state='closed')
+# def description():
+#     # API comment
+#     pr.create_issue_comment('No Description on PR body. Please add valid description.')
+#     # closed API
+#     pr.edit(state='closed')
 
 if __name__ == '__main__':
     print('start')
@@ -108,8 +135,8 @@ if __name__ == '__main__':
         merge()  
     if CLOSE_PR.__eq__('true'):
         close()  
-    if BASE.__eq__('true') and  HEAD.__eq__('false'):
-        target() 
-    if PR_DESCRIPTION.__eq__('true'):
-        description() 
+    # if BASE.__eq__('true') and  HEAD.__eq__('false'):
+    #     target() 
+    # if PR_DESCRIPTION.__eq__('true'):
+    #     description() 
     print('end')
