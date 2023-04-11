@@ -87,10 +87,10 @@ for pull in pulls:
         pull.edit(state='closed')
         pull.create_issue_comment('No Description on PR body. Please add valid description.')
 
-if __name__ == '__main__':
-    print('start')
-    if MERGE_PR.__eq__('true'):
-        merge()  
-    if CLOSE_PR.__eq__('true'):
-        close()  
-    print('end')
+# if __name__ == '__main__':
+#     print('start')
+#     if MERGE_PR.__eq__('true'):
+#         merge()  
+#     if CLOSE_PR.__eq__('true'):
+#         close()  
+#     print('end')
