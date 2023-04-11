@@ -13,21 +13,35 @@ if pulls.totalCount == 0:
     print('No open pull requests, exiting...')
     exit()
 
-pull_number = int(os.environ.get("PR_NUMBER"))
+
+# Get the pull request number from the environment variable
+pull_number_str = os.environ.get('PR_NUMBER')
+print(f"PR_NUMBER: {pull_number_str}")
+
+# Parse the pull request number as an integer
+pull_number = int(pull_number_str)
+print("pull_number:",pull_number)
+
+# Get the pull request object
+pull_request = repo.get_pull(pull_number)
+print("pull_request:",pull_request)
+pr = repo.get_pull(pull_number)
+print("pr:",pr)
+# pull_number = int(os.environ.get("PR_NUMBER"))
 MERGE_PR = os.environ.get("MERGE_PR")
 CLOSE_PR = os.environ.get("CLOSE_PR")
 PR_DESCRIPTION = os.environ.get("PR_DESCRIPTION")
 BASE = os.environ.get("BASE_REF")
 HEAD = os.environ.get("HEAD_REF")
 
-pr = repo.get_pull(pull_number)
 
 
-print("repo_name_wf:",repo_name)
-print("pr-num-wf:",pull_number)
-print("repo_name:",repo)
-print("pr_number:",pr.number)
-print("pulls:",pulls)
+# print("pr:",pr)
+# print("repo_name_wf:",repo_name)
+# print("pr-num-wf:",pull_number)
+# print("repo_name:",repo)
+# print("pr_number:",pr.number)
+# print("pulls:",pulls)
 
 # Add "Stale" label to the PR if no active from 15 days
 stale_days = 15
