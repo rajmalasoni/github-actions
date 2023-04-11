@@ -28,11 +28,11 @@ if pulls.totalCount == 0:
 # pr = repo.get_pull(pull_number)
 # print("pr:",pr)
 # pull_number = int(os.environ.get("PR_NUMBER"))
-pull_number = os.environ.get('PR_NUMBER')
-print("pull_number:",pull_number)
+# pull_number = os.environ.get('PR_NUMBER')
+# print("pull_number:",pull_number)
 
-pr = repo.get_pull(int(pull_number))
-print("pull_request:",pr)
+# pr = repo.get_pull(int(pull_number))
+# print("pull_request:",pr)
 
 MERGE_PR = os.environ.get("MERGE_PR")
 CLOSE_PR = os.environ.get("CLOSE_PR")
