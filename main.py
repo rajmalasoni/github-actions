@@ -10,7 +10,7 @@ pulls = repo.get_pulls(state='open')
 
 # Check if there are any open pull requests
 if pulls.totalCount == 0:
-    print('No open pull requests, exiting...')
+    print('No open pull requests, exiting...')_ 
     exit()
 
 MERGE_PR = os.environ.get("MERGE_PR")
@@ -44,23 +44,36 @@ for pr in pulls:
 
 print("pr_updated_at:",pr.updated_at)
 
-# Check if the "/Approved" comment trigger is in the pull request comments
-def merge():
+if os.environ['MERGE_PR'] == 'True':
     for pull in pulls:
-        for comment in pull.get_issue_comments():
-            if comment.body.startswith('/Approved'):
-                # Merge the pull request
-                pull.merge()
-                pull.create_issue_comment('Pull Request is Approved and Merged!')
+        # Merge the pull request
+        pull.merge()
+        # Add a comment explaining that the pull request was merged
+        pull.create_issue_comment('This pull request was merged because of a slash command.')
+elif os.environ['CLOSE_PR'] == 'True':
+    for pull in pulls:
+        # Close the pull request
+        pull.edit(state='closed')
+        # Add a comment explaining that the pull request was closed
+        pull.create_issue_comment('This pull request was closed because of a slash command.')
 
-# Check if the "/Close" comment trigger is in the pull request comments
-def close():
-    for pull in pulls:
-        for comment in pull.get_issue_comments():
-            if comment.body.startswith('/Close'):
-                # Close the pull request
-                pull.edit(state='closed')
-                pull.create_issue_comment('Pull Request Closed!') 
+# # Check if the "/Approved" comment trigger is in the pull request comments
+# def merge():
+#     for pull in pulls:
+#         for comment in pull.get_issue_comments():
+#             if comment.body.startswith('/Approved'):
+#                 # Merge the pull request
+#                 pull.merge()
+#                 pull.create_issue_comment('Pull Request is Approved and Merged!')
+
+# # Check if the "/Close" comment trigger is in the pull request comments
+# def close():
+#     for pull in pulls:
+#         for comment in pull.get_issue_comments():
+#             if comment.body.startswith('/Close'):
+#                 # Close the pull request
+#                 pull.edit(state='closed')
+#                 pull.create_issue_comment('Pull Request Closed!') 
 
 # Check if the pull request targets the master branch directly
 for pull in pulls:
@@ -74,10 +87,10 @@ for pull in pulls:
         pull.edit(state='closed')
         pull.create_issue_comment('No Description on PR body. Please add valid description.')
 
-if __name__ == '__main__':
-    print('start')
-    if MERGE_PR.__eq__('true'):
-        merge()  
-    if CLOSE_PR.__eq__('true'):
-        close()  
-    print('end')
+# if __name__ == '__main__':
+#     print('start')
+#     if MERGE_PR.__eq__('true'):
+#         merge()  
+#     if CLOSE_PR.__eq__('true'):
+#         close()  
+#     print('end')
