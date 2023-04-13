@@ -57,6 +57,8 @@ print("pr_updated_at:",pr.updated_at)
 if 'PR_NUMBER' in os.environ:
     pr_number = int(os.environ['PR_NUMBER'])
     pr = repo.get_pull(pr_number)
+    print("pr_number:", pr_number)
+    print("pr:", pr)
     
     if os.environ['MERGE_PR'] == 'True':
         pr.merge()
