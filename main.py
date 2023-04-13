@@ -60,10 +60,10 @@ if 'PR_NUMBER' in os.environ:
     print("pr_number:", pr_number)
     print("pr:", pr)
     
-    if os.environ['MERGE_PR'] == 'True':
+    if os.environ['MERGE_PR'] == 'true':
         pr.merge()
         pr.create_issue_comment('This pull request was merged because of a slash command.')
-    elif os.environ['CLOSE_PR'] == 'True':
+    elif os.environ['CLOSE_PR'] == 'true':
         pr.edit(state='closed')
         pr.create_issue_comment('This pull request was closed because of a slash command.')
 else:
