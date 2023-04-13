@@ -10,6 +10,7 @@ repo = g.get_repo(os.environ['REPO_NAME'])
 pulls = repo.get_pulls(state='open')
 MERGE_PR = os.environ.get("MERGE_PR")
 CLOSE_PR = os.environ.get("CLOSE_PR")
+pr = repo.get_pull(int(os.environ['PR_NUMBER']))
 
 # 1.Check if there are any open pull requests
 if pulls.totalCount == 0:
@@ -43,7 +44,6 @@ print("pr_updated_at:",pr.updated_at)
 
 # Check if the merge slash command was used
 if os.environ['MERGE_PR'] == 'True':
-    pr = repo.get_pull(int(os.environ['PR_NUMBER']))
     # Merge the pull request
     pr.merge()
     # Add a comment explaining that the pull request was merged
