@@ -23,7 +23,7 @@ now = datetime.now()
 for pr in pulls:
     time_diff = now - pr.updated_at
     # check if the time difference is greater than the stale_days
-    if time_diff < timedelta(days=stale_days):
+    if time_diff > timedelta(days=stale_days):
         print("Pull request", pr.number, "is stale!")
         pr.create_issue_comment('This PR is stale because it has been open 15 days with no activity. Remove stale label or comment/update PR otherwise this will be closed in next 2 days.')
         pr.add_to_labels('Stale')
@@ -35,7 +35,7 @@ for pr in pulls:
     if "Stale" in [label.name for label in pr.labels]:
         time_diff = now - pr.updated_at
         # check if the time difference is greater than the stale_close_days
-        if time_diff < timedelta(days=stale_close_days):
+        if time_diff > timedelta(days=stale_close_days):
             print("Pull request", pr.number, "is stale and closed!")
             pr.edit(state="closed")
             pr.create_issue_comment('This PR was closed because it has been stalled for 2 days with no activity.')
@@ -47,12 +47,14 @@ for pull in pulls:
     if pull.base.ref == 'master' and not pull.head.ref.startswith('release/'):
         pull.edit(state='closed')
         pull.create_issue_comment('Do not accept PR target from feature branch to master branch.')
+        print("Pull request", pull.number, "Do not accept PR target from feature branch to master branch.")
 
 # 5.Check if the pull request has a description
 for pull in pulls:
     if not pull.body:
         pull.edit(state='closed')
         pull.create_issue_comment('No Description on PR body. Please add valid description.')
+        print("Pull request", pull.number, "No Description on PR body. Please add valid description.")
 
 
 # 6.Check if the Approved or Close comments in the pull request comments
@@ -65,6 +67,7 @@ def merge():
 
         pr.merge(merge_method = 'merge', commit_message ='Pull Request Approved and Merged!')
         pr.create_issue_comment('This pull request was approved and merged because of a slash command.')
+        print("Pull request", pr, "was approved and merged because of a slash command.")
     else:
         print('No pull request number specified.')
 
@@ -77,6 +80,7 @@ def close():
 
         pr.edit(state='closed')
         pr.create_issue_comment('This pull request was closed because of a slash command.')
+        print("Pull request", pr, "was closed because of a slash command.")
     else:
         print('No pull request number specified.')  
 
