@@ -42,24 +42,6 @@ for pr in pulls:
 
 print("pr_updated_at:",pr.updated_at)
 
-# 4.Check if the Approved or Close comments in the pull request comments
-if 'PR_NUMBER' in os.environ:
-    pr_number = int(os.environ['PR_NUMBER'])
-    pr = repo.get_pull(pr_number)
-    print("pr_number:", pr_number)
-    print("pr:", pr)
-    
-    if os.environ['MERGE_PR'] == 'true':
-        # pr.merge()
-        pr.merge(merge_method = 'merge', commit_message ='Pull Request Approved and Merged!')
-        pr.create_issue_comment('This pull request was approved and merged because of a slash command.')
-    elif os.environ['CLOSE_PR'] == 'true':
-        pr.edit(state='closed')
-        pr.create_issue_comment('This pull request was closed because of a slash command.')
-else:
-    print('No pull request number specified.')
-
-
 # 5.Check if the pull request targets the master branch directly
 for pull in pulls:
     if pull.base.ref == 'master' and not pull.head.ref.startswith('release/'):
@@ -71,3 +53,27 @@ for pull in pulls:
     if not pull.body:
         pull.edit(state='closed')
         pull.create_issue_comment('No Description on PR body. Please add valid description.')
+
+
+# 4.Check if the Approved or Close comments in the pull request comments
+if 'PR_NUMBER' in os.environ and os.environ['PR_NUMBER']:
+    pr_number = int(os.environ['PR_NUMBER'])
+    pr = repo.get_pull(pr_number)
+    print("pr_number:", pr_number)
+    print("pr:", pr)
+
+# if 'PR_NUMBER' in os.environ:
+#     pr_number = int(os.environ['PR_NUMBER'])
+#     pr = repo.get_pull(pr_number)
+#     print("pr_number:", pr_number)
+#     print("pr:", pr)
+    
+    if os.environ['MERGE_PR'] == 'true':
+        # pr.merge()
+        pr.merge(merge_method = 'merge', commit_message ='Pull Request Approved and Merged!')
+        pr.create_issue_comment('This pull request was approved and merged because of a slash command.')
+    elif os.environ['CLOSE_PR'] == 'true':
+        pr.edit(state='closed')
+        pr.create_issue_comment('This pull request was closed because of a slash command.')
+else:
+    print('No pull request number specified.')        
