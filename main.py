@@ -56,24 +56,51 @@ for pull in pulls:
 
 
 # 4.Check if the Approved or Close comments in the pull request comments
-if 'PR_NUMBER' in os.environ and os.environ['PR_NUMBER']:
-    pr_number = int(os.environ['PR_NUMBER'])
-    pr = repo.get_pull(pr_number)
-    print("pr_number:", pr_number)
-    print("pr:", pr)
-
-# if 'PR_NUMBER' in os.environ:
-#     pr_number = int(os.environ['PR_NUMBER'])
-#     pr = repo.get_pull(pr_number)
-#     print("pr_number:", pr_number)
-#     print("pr:", pr)
     
-    if os.environ['MERGE_PR'] == 'true':
-        # pr.merge()
+
+def merge():
+    if 'PR_NUMBER' in os.environ:
+        pr_number = int(os.environ['PR_NUMBER'])
+        pr = repo.get_pull(pr_number)
+        print("pr_number:", pr_number)
+        print("pr:", pr)
+    
+    # if os.environ['MERGE_PR'] == 'true':
+    #     # pr.merge()
         pr.merge(merge_method = 'merge', commit_message ='Pull Request Approved and Merged!')
         pr.create_issue_comment('This pull request was approved and merged because of a slash command.')
-    elif os.environ['CLOSE_PR'] == 'true':
+    # elif os.environ['CLOSE_PR'] == 'true':
+    #     pr.edit(state='closed')
+    #     pr.create_issue_comment('This pull request was closed because of a slash command.')
+
+    else:
+        print('No pull request number specified.') 
+    # print("PR has Approved.")
+    # # merge API
+    # pr.merge(merge_method = 'merge', commit_message ='Pull Request Approved and Merged!')
+    # #  merge API comment
+    # pr.create_issue_comment('Pull Request Approved and Merged!')
+
+def close():
+    if 'PR_NUMBER' in os.environ:
+        pr_number = int(os.environ['PR_NUMBER'])
+        pr = repo.get_pull(pr_number)
+        print("pr_number:", pr_number)
+        print("pr:", pr)
+
         pr.edit(state='closed')
         pr.create_issue_comment('This pull request was closed because of a slash command.')
-else:
-    print('No pull request number specified.')        
+
+    # print("PR has Closed manually by comments.")
+    # # closed API
+    # pr.edit(state='closed')
+    # # closed API comment
+    # pr.create_issue_comment('Pull Request Closed!')     
+
+if __name__ == '__main__':
+    print('start')
+    if MERGE_PR is 'true':
+        merge()  
+    if CLOSE_PR is 'true':
+        close()  
+    print('end')      
