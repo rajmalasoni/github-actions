@@ -67,7 +67,7 @@ def merge():
 
         pr.merge(merge_method = 'merge', commit_message ='Pull Request Approved and Merged!')
         pr.create_issue_comment('This pull request was approved and merged because of a slash command.')
-        print("Pull request", pr, "was approved and merged because of a slash command.")
+        print("Pull request:", pr, "was approved and merged because of a slash command.")
     else:
         print('No pull request number specified.')
 
@@ -80,7 +80,7 @@ def close():
 
         pr.edit(state='closed')
         pr.create_issue_comment('This pull request was closed because of a slash command.')
-        print("Pull request", pr, "was closed because of a slash command.")
+        print("Pull request:", pr, "was closed because of a slash command.")
     else:
         print('No pull request number specified.')  
 
