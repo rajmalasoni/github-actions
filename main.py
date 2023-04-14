@@ -99,8 +99,8 @@ def close():
 
 if __name__ == '__main__':
     print('start')
-    if MERGE_PR is 'true':
+    if MERGE_PR.__eq__('true'):
         merge()  
-    if CLOSE_PR is 'true':
-        close()  
+    if CLOSE_PR.__eq__('true'):
+        close()   
     print('end')      
