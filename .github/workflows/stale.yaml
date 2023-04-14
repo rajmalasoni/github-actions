@@ -8,7 +8,6 @@ permissions: write-all
 env:
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
   REPO_NAME: ${{ github.repository }}
-  PR_NUMBER: ${{ github.event.number }}
 
 jobs:
   Stale-PR:
@@ -17,7 +16,4 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
       - name: Stale PR
-        uses: ./
-        with:
-          repo: ${{ github.repository }}
-          pr_number: ${{ github.event.number }}      
+        uses: ./    
