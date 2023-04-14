@@ -4,24 +4,12 @@ from datetime import datetime, timedelta
 
 # env values
 g = Github(os.environ["GITHUB_TOKEN"])
-# repo_name = os.environ.get("REPO_NAME")
-# repo = g.get_repo(repo_name)
 repo = g.get_repo(os.environ['REPO_NAME'])
 pulls = repo.get_pulls(state='open')
 MERGE_PR = os.environ.get("MERGE_PR")
 CLOSE_PR = os.environ.get("CLOSE_PR")
-# pull_number = int(os.environ.get("PR_NUMBER"))
-# pr = repo.get_pull(pull_number)
-# prenv = repo.get_pull(int(os.environ['PR_NUMBER']))
-# pulls = repo.get_pulls(state='open')
 
-# print("repo_name:",repo_name)
 print("repo:",repo)
-print("pulls:",pulls)
-# print("pull_number:",pull_number)
-# print("pr:", pr)
-# print("prenv:", prenv)
-# print("pr_number:",pr.number)
 print("pulls:",pulls)
 
 # 1.Check if there are any open pull requests
@@ -43,7 +31,7 @@ for pr in pulls:
 # 3.close staled PR if 2 days of no activity
 stale_close_days = 2
 for pr in pulls:
-    # check if the stale label is applied on PR
+    # check if the Stale label is applied on PR
     if "Stale" in [label.name for label in pr.labels]:
         time_diff = now - pr.updated_at
         # check if the time difference is greater than the stale_close_days
@@ -54,6 +42,7 @@ for pr in pulls:
 
 print("pr_updated_at:",pr.updated_at)
 
+# 4.Check if the Approved or Close comments in the pull request comments
 if 'PR_NUMBER' in os.environ:
     pr_number = int(os.environ['PR_NUMBER'])
     pr = repo.get_pull(pr_number)
@@ -62,7 +51,7 @@ if 'PR_NUMBER' in os.environ:
     
     if os.environ['MERGE_PR'] == 'true':
         pr.merge()
-        pr.create_issue_comment('This pull request was merged because of a slash command.')
+        pr.create_issue_comment('This pull request was approved and merged because of a slash command.')
     elif os.environ['CLOSE_PR'] == 'true':
         pr.edit(state='closed')
         pr.create_issue_comment('This pull request was closed because of a slash command.')
@@ -70,38 +59,14 @@ else:
     print('No pull request number specified.')
 
 
-# # 4.Check if the "/Approved" comment trigger is in the pull request comments
-# def merge():
-#     for pull in pulls:
-#         for comment in pull.get_issue_comments():
-#             if comment.body.startswith('/Approved'):
-#                 # Merge the pull request
-#                 pull.merge()
-#                 pull.create_issue_comment('Pull Request is Approved and Merged!')
-
-# # 5.Check if the "/Close" comment trigger is in the pull request comments
-# def close():
-#     for pull in pulls:
-#         for comment in pull.get_issue_comments():
-#             if comment.body.startswith('/Close'):
-#                 # Close the pull request
-#                 pull.edit(state='closed')
-#                 pull.create_issue_comment('Pull Request Closed!') 
-
-# 6.Check if the pull request targets the master branch directly
+# 5.Check if the pull request targets the master branch directly
 for pull in pulls:
     if pull.base.ref == 'master' and not pull.head.ref.startswith('release/'):
         pull.edit(state='closed')
         pull.create_issue_comment('Do not accept PR target from feature branch to master branch.')
 
-# 7.Check if the pull request has a description
+# 6.Check if the pull request has a description
 for pull in pulls:
     if not pull.body:
         pull.edit(state='closed')
         pull.create_issue_comment('No Description on PR body. Please add valid description.')
-
-# if __name__ == '__main__':
-#     if MERGE_PR.__eq__('true'):
-#         merge()  
-#     if CLOSE_PR.__eq__('true'):
-#         close()  
