@@ -15,6 +15,8 @@ try:
     pulls = repo.get_pulls(state='open')
     MERGE_PR = os.environ.get("MERGE_PR")
     CLOSE_PR = os.environ.get("CLOSE_PR")
+    pr_number = int(os.environ['PR_NUMBER'])
+    pr = repo.get_pull(pr_number)
 except KeyError as e:
     print(f"Failed to retrieve environment variable: {str(e)}")
     exit()
@@ -22,6 +24,8 @@ except KeyError as e:
 
 print("repo:",repo)
 print("pulls:",pulls)
+print("pr_number:", pr_number)
+print("pr:", pr)
 
 # 1.Check if there are any open pull requests
 if pulls.totalCount == 0:
