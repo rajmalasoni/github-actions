@@ -3,11 +3,22 @@ from github import Github
 from datetime import datetime, timedelta
 
 # env values
-g = Github(os.environ["GITHUB_TOKEN"])
-repo = g.get_repo(os.environ['REPO_NAME'])
-pulls = repo.get_pulls(state='open')
-MERGE_PR = os.environ.get("MERGE_PR")
-CLOSE_PR = os.environ.get("CLOSE_PR")
+# g = Github(os.environ["GITHUB_TOKEN"])
+# repo = g.get_repo(os.environ['REPO_NAME'])
+# pulls = repo.get_pulls(state='open')
+# MERGE_PR = os.environ.get("MERGE_PR")
+# CLOSE_PR = os.environ.get("CLOSE_PR")
+
+try:
+    g = Github(os.environ["GITHUB_TOKEN"])
+    repo = g.get_repo(os.environ['REPO_NAME'])
+    pulls = repo.get_pulls(state='open')
+    MERGE_PR = os.environ.get("MERGE_PR")
+    CLOSE_PR = os.environ.get("CLOSE_PR")
+except KeyError as e:
+    print(f"Failed to retrieve environment variable: {str(e)}")
+    exit()
+
 
 print("repo:",repo)
 print("pulls:",pulls)
@@ -25,8 +36,15 @@ for pr in pulls:
     # check if the time difference is greater than the stale_days
     if time_diff > timedelta(days=stale_days):
         print("Pull request", pr.number, "is stale!")
-        pr.create_issue_comment('This PR is stale because it has been open 15 days with no activity. Remove stale label or comment/update PR otherwise this will be closed in next 2 days.')
-        pr.add_to_labels('Stale')
+        try:
+            pr.create_issue_comment('This PR is stale because it has been open 15 days with no activity. Remove stale label or comment/update PR otherwise this will be closed in next 2 days.')
+            pr.add_to_labels('Stale')
+        except Exception as e:
+            print(f"Failed to add label/comment: {str(e)}")
+            continue
+
+        # pr.create_issue_comment('This PR is stale because it has been open 15 days with no activity. Remove stale label or comment/update PR otherwise this will be closed in next 2 days.')
+        # pr.add_to_labels('Stale')
 
 # 3.close staled PR if 2 days of no activity
 stale_close_days = 2
@@ -37,8 +55,15 @@ for pr in pulls:
         # check if the time difference is greater than the stale_close_days
         if time_diff > timedelta(days=stale_close_days):
             print("Pull request", pr.number, "is stale and closed!")
-            pr.edit(state="closed")
-            pr.create_issue_comment('This PR was closed because it has been stalled for 2 days with no activity.')
+            try:
+                pr.edit(state="closed")
+                pr.create_issue_comment('This PR was closed because it has been stalled for 2 days with no activity.')
+            except Exception as e:
+                print(f"Failed to close PR: {str(e)}")
+                continue
+
+            # pr.edit(state="closed")
+            # pr.create_issue_comment('This PR was closed because it has been stalled for 2 days with no activity.')
 
 print("pr_updated_at:",pr.updated_at)
 
@@ -64,12 +89,20 @@ def merge():
         pr = repo.get_pull(pr_number)
         print("pr_number:", pr_number)
         print("pr:", pr)
+        try:
+            pr.merge(merge_method = 'merge', commit_message ='Pull Request Approved and Merged!')
+            pr.create_issue_comment('This pull request was approved and merged because of a slash command.')
+            print("Pull request:", pr, "was approved and merged because of a slash command.")
+        except Exception as e:
+            print(f"Failed to merge PR: {str(e)}")
+            exit()
 
-        pr.merge(merge_method = 'merge', commit_message ='Pull Request Approved and Merged!')
-        pr.create_issue_comment('This pull request was approved and merged because of a slash command.')
-        print("Pull request:", pr, "was approved and merged because of a slash command.")
-    else:
-        print('No pull request number specified.')
+
+        # pr.merge(merge_method = 'merge', commit_message ='Pull Request Approved and Merged!')
+        # pr.create_issue_comment('This pull request was approved and merged because of a slash command.')
+        # print("Pull request:", pr, "was approved and merged because of a slash command.")
+    # else:
+    #     print('No pull request number specified.')
 
 def close():
     if 'PR_NUMBER' in os.environ:
@@ -77,12 +110,19 @@ def close():
         pr = repo.get_pull(pr_number)
         print("pr_number:", pr_number)
         print("pr:", pr)
+        try:
+            pr.edit(state="closed")
+            pr.create_issue_comment('This pull request was closed because of a slash command.')
+            print("Pull request:", pr, "was closed because of a slash command.")
+        except Exception as e:
+            print(f"Failed to close PR: {str(e)}")
+            exit()
 
-        pr.edit(state='closed')
-        pr.create_issue_comment('This pull request was closed because of a slash command.')
-        print("Pull request:", pr, "was closed because of a slash command.")
-    else:
-        print('No pull request number specified.')  
+    #     pr.edit(state='closed')
+    #     pr.create_issue_comment('This pull request was closed because of a slash command.')
+    #     print("Pull request:", pr, "was closed because of a slash command.")
+    # else:
+    #     print('No pull request number specified.')  
 
 if __name__ == '__main__':
     print('start')
