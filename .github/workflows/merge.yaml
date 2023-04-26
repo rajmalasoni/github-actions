@@ -19,7 +19,3 @@ jobs:
         uses: actions/checkout@v3
       - name: Merge and close PR
         uses: ./
-        with:
-          pr_number: ${{ github.event.issue.number }} 
-          merge_pr: ${{ github.event.comment.body == '/Approved' }}
-          close_pr: ${{ github.event.comment.body == '/Close' }}
