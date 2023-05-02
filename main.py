@@ -2,8 +2,12 @@ import os
 from github import Github
 from datetime import datetime, timedelta
 
+access_token = "${{ secrets.ACCESS_TOKEN }}"
+
+# create a Github object using the access token
+g = Github(access_token)
 # env values
-g = Github(os.environ["GITHUB_TOKEN"])
+# g = Github(os.environ["GITHUB_TOKEN"])
 repo = g.get_repo(os.environ['REPO_NAME'])
 pulls = repo.get_pulls(state='open')
 MERGE_PR = os.environ.get("MERGE_PR")
