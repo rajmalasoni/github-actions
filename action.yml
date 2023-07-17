@@ -1,4 +1,3 @@
-
 name: "Main action file of Docker container actions"
 description: "Docker container actions"
 
@@ -38,6 +37,9 @@ inputs:
   close_pr:
     description: PR number
     required: false  
+  version_file:
+    description: contents from version file
+    required: false  
     
 runs:
   using: 'docker'
@@ -52,3 +54,4 @@ runs:
     PR_NUMBER: ${{ inputs.pr_number }}
     MERGE_PR: ${{ inputs.merge_pr }}
     CLOSE_PR: ${{ inputs.close_pr }}
+    VERSION_FILE: ${{ inputs.version_file }}
