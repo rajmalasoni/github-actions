@@ -2,9 +2,6 @@ name: check if version from version file already exist as tag
 on:
   pull_request:
     types: [opened, edited, reopened]
-#    branches:
-#      - master
-#      - release/*
 
 permissions: write-all
 
@@ -16,7 +13,6 @@ env:
 jobs:
   file-checker:
     runs-on: ubuntu-latest
-    
     steps: 
       - name: Checkout code
         uses: actions/checkout@v3
@@ -25,7 +21,6 @@ jobs:
 
   tag-matcher:
     runs-on: ubuntu-latest
-    
     steps: 
       - name: Checkout code
         uses: actions/checkout@v3
