@@ -118,8 +118,9 @@ if 'PR_NUMBER' in os.environ:
                 version_file_exist = True
                 break
         if not version_file_exist:
-            pr.create_issue_comment('The VERSION file does not exist. Closing this pull request.')
-            print('The VERSION file does not exist. Closing this pull request.')
+            msg = "The VERSION file does not exist. Closing this pull request."
+            pr.create_issue_comment(msg)
+            print(msg)
             pr.edit(state='closed')  
         else:
             print('The VERSION file exists. All ohk')
@@ -145,9 +146,10 @@ if 'PR_NUMBER' in os.environ:
                 tag_exist = True
                 break
         if tag_exist:
-            pr.create_issue_comment('The tag from VERSION file already exists. Closing this pull request.')
-            print('The tag from VERSION file already exists. Closing this pull request.')
-            pr.edit(state='closed') 
+            msg = "The tag from VERSION file already exists. Closing this pull request."
+            pr.create_issue_comment(msg)
+            print(msg)
+            pr.edit(state='closed')
         else:
             print('The VERSION didnt matched with tag. All ohk')
 
