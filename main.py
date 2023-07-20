@@ -146,7 +146,7 @@ if 'PR_NUMBER' in os.environ:
                 tag_exist = True
                 break
         if tag_exist:
-            msg = "The tag from VERSION file already exists. Closing this pull request."
+            msg = "The tag from VERSION file already exists. Please update the VERSION file."
             pr.create_issue_comment(msg)
             print(msg)
             pr.edit(state='closed')
