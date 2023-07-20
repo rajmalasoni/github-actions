@@ -151,7 +151,7 @@ if 'PR_NUMBER' in os.environ:
             print(msg)
             pr.edit(state='closed')
         else:
-            print('The VERSION didnt matched with tag. All ohk')
+            print('The VERSION didnt matched with tag. All ok')
 
     except Exception as e:
         print('PR_NUMBER :' , os.environ['PR_NUMBER'])
