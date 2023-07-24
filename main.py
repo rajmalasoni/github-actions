@@ -91,7 +91,6 @@ for pull in pulls:
             print(f"Error:  {e} ")
 
 # 5.Check if the pull request has a description
-print("--------------------description checker--------------------")
 for pull in pulls:
     if not pull.body:
         try:
