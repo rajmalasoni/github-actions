@@ -44,7 +44,7 @@ print("repo:",repo)
 print("pulls:",pulls)
 
 # 1.Check if there are any open pull requests
-#if pulls.totalCount == 0:
+# if pulls.totalCount == 0:
 #   print('No open pull requests, exiting...')
 #  exit()
 
@@ -63,22 +63,23 @@ for pr in pulls:
         print(f"Error: {str(e)}")
 
 # 3.close staled PR if 2 days of no activity
-for pr in pulls:
-    # check if the Stale label is applied on PR
-    if "Stale" in [label.name for label in pr.labels]:
-        try:
-            time_diff = now - pr.updated_at
-            # check if the time difference is greater than the stale_close_days
-            if time_diff > timedelta(days=stale_close_days):
-                print(f"Pull request: {pr.number} is stale and closed!")
-                pr.edit(state="closed")
-                pr.create_issue_comment(msg_job3)
-                print(msg_job3)
-        except Exception as e:
-            print(f"Error occurred while closing pull request: {pr.number} ")
-            print(f"Error: {str(e)}")
+if pulls.totalCount != 0:
+    for pr in pulls:
+        # check if the Stale label is applied on PR
+        if "Stale" in [label.name for label in pr.labels]:
+            try:
+                time_diff = now - pr.updated_at
+                # check if the time difference is greater than the stale_close_days
+                if time_diff > timedelta(days=stale_close_days):
+                    print(f"Pull request: {pr.number} is stale and closed!")
+                    pr.edit(state="closed")
+                    pr.create_issue_comment(msg_job3)
+                    print(msg_job3)
+            except Exception as e:
+                print(f"Error occurred while closing pull request: {pr.number} ")
+                print(f"Error: {str(e)}")
 
-print(f"pr_updated_at: {pr.updated_at}")
+    print(f"pr_updated_at: {pr.updated_at}")
 
 # 4.Check if the pull request targets the master branch directly
 for pull in pulls:
