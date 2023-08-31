@@ -44,9 +44,9 @@ print("repo:",repo)
 print("pulls:",pulls)
 
 # 1.Check if there are any open pull requests
-if pulls.totalCount == 0:
-    print('No open pull requests, exiting...')
-    exit()
+#if pulls.totalCount == 0:
+#   print('No open pull requests, exiting...')
+#  exit()
 
 # 2.Add "Stale" label to the PR if no active from 15 days
 now = datetime.now()
