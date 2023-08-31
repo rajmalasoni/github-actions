@@ -12,7 +12,7 @@ env:
   REPO_NAME: ${{ github.repository }}
   PR_NUMBER: ${{ github.event.pull_request.number }}
   EVENT: ${{ github.event.action }} 
-  WEBHOOK: "https://chat.googleapis.com/v1/spaces/AAAAJWnA1jA/messages?key=AIzaSyDdI0hCZtE6vySjMm-WEfRq3CPzqKqqsHI&token=pfdOLCmNOvrazVV-IkSORjSpmfOs9Kpay03eCZD5xww"
+  WEBHOOK: "https://chat.googleapis.com/v1/spaces/AAAAE1j9nuM/messages?key=AIzaSyDdI0hCZtE6vySjMm-WEfRq3CPzqKqqsHI&token=3kBsnjcv9kTsSS8c0c_jQMR8fNt8ccdC-O-8iIGEl6s"
 
  
 jobs:
