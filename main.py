@@ -1,6 +1,7 @@
 import os
 from github import Github
 from datetime import datetime, timedelta
+import requests
 
 # env values
 g = Github(os.environ["GITHUB_TOKEN"])
@@ -9,6 +10,8 @@ pulls = repo.get_pulls(state='open')
 MERGE_PR = os.environ.get("MERGE_PR")
 CLOSE_PR = os.environ.get("CLOSE_PR")
 VERSION_FILE = os.environ.get("VERSION_FILE")
+EVENT = os.environ['EVENT']
+GCHAT_WEBHOOK_URL = os.environ['WEBHOOK']
 
 # Global variables
 # 2 stale PR
@@ -36,7 +39,6 @@ msg_job7_reject = "The VERSION file does not exist. Closing this pull request."
 # 8. Check if version name from "VERSION" already exists as tag  
 msg_job8_success = "The VERSION didnt matched with tag. All ok"
 msg_job8_reject = "The tag from VERSION file already exists. Please update the VERSION file."
-
 
 print("repo:",repo)
 print("pulls:",pulls)
@@ -182,6 +184,35 @@ if 'PR_NUMBER' in os.environ:
 
     except Exception as e:
         print(f"Failed to compare version from VERSION  with tag: {str(e)}")
+        print(f"PR_NUMBER : {os.environ['PR_NUMBER']}")
+
+# 9. Google chat integration with github
+if 'EVENT' in os.environ:
+    try:
+        pr_number = int(os.environ['PR_NUMBER'])
+        pr = repo.get_pull(pr_number)
+        message = f"An Event is created on PR:\nTitle: {pr.title}\nURL: {pr.html_url}"
+
+        set_message = {
+            "opened": f"New Pull Request:\nTitle: {pr.title}\nURL: {pr.html_url}",
+            "edited": f"Pull Request Edited:\nTitle: {pr.title}\nURL: {pr.html_url}",
+            "closed": f"Pull Request Closed:\nTitle: {pr.title}\nURL: {pr.html_url}",
+            "reopened": f"Pull Request Reopened:\nTitle: {pr.title}\nURL: {pr.html_url}",
+            # Add more cases as needed
+        }
+
+        message = set_message.get(EVENT, message)
+
+        payload = {
+            "text" : message
+        }
+
+        response = requests.post(GCHAT_WEBHOOK_URL, json=payload)
+        print(response)
+        print(EVENT)
+
+    except Exception as e:
+        print(f"Failed to send notification on google chat: {str(e)}")
         print(f"PR_NUMBER : {os.environ['PR_NUMBER']}")
 
 if __name__ == '__main__':
