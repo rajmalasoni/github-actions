@@ -43,31 +43,22 @@ msg_job8_reject = "The tag from VERSION file already exists. Please update the V
 print("repo:",repo)
 print("pulls:",pulls)
 
-# 1.Check if there are any open pull requests
-# if pulls.totalCount == 0:
-#   print('No open pull requests, exiting...')
-#  exit()
-
-# 2.Add "Stale" label to the PR if no active from 15 days
-now = datetime.now()
-for pr in pulls:
-    try:
+try:
+    # 1.Add "Stale" label to the PR if no active from 15 days
+    now = datetime.now()
+    for pr in pulls:
         time_diff = now - pr.updated_at
         # check if the time difference is greater than the stale_days
         if time_diff > timedelta(days=stale_days):
             print(f"Pull request: {pr.number} is stale!")
             pr.create_issue_comment(msg_job2)
             pr.add_to_labels('Stale')
-    except Exception as e:
-        print(f"Error occurred while processing pull request: {pr.number}")
-        print(f"Error: {str(e)}")
 
-# 3.close staled PR if 2 days of no activity
-if pulls.totalCount != 0:
-    for pr in pulls:
-        # check if the Stale label is applied on PR
-        if "Stale" in [label.name for label in pr.labels]:
-            try:
+    # 2.close staled PR if 2 days of no activity
+    if pulls.totalCount != 0:
+        for pr in pulls:
+            # check if the Stale label is applied on PR
+            if "Stale" in [label.name for label in pr.labels]:
                 time_diff = now - pr.updated_at
                 # check if the time difference is greater than the stale_close_days
                 if time_diff > timedelta(days=stale_close_days):
@@ -75,68 +66,48 @@ if pulls.totalCount != 0:
                     pr.edit(state="closed")
                     pr.create_issue_comment(msg_job3)
                     print(msg_job3)
-            except Exception as e:
-                print(f"Error occurred while closing pull request: {pr.number} ")
-                print(f"Error: {str(e)}")
+        print(f"pr_updated_at: {pr.updated_at}")
 
-    print(f"pr_updated_at: {pr.updated_at}")
-
-# 4.Check if the pull request targets the master branch directly
-for pull in pulls:
-    if pull.base.ref == 'master' and not pull.head.ref.startswith('release/'):
-        try:
+    # 3.Check if the pull request targets the master branch directly
+    for pull in pulls:
+        if pull.base.ref == 'master' and not pull.head.ref.startswith('release/'):
             print(f"Pull request: {pull.number} was targeted to master")
             pull.edit(state='closed')
             pull.create_issue_comment(msg_job4)
             print(msg_job4)
-        except Exception as e:
-            print(f"Error occurred while processing pull request: {pull.number} ")
-            print(f"Error:  {e} ")
 
-# 5.Check if the pull request has a description
-for pull in pulls:
-    if not pull.body:
-        try:
+    # 4.Check if the pull request has a description
+    for pull in pulls:
+        if not pull.body:
             print(f"Pull request: {pull.number} has no description" )
             pull.edit(state='closed')
             pull.create_issue_comment(msg_job5)
             print(msg_job5)
-        except Exception as e:
-            print(f"Error occurred while processing pull request: {pull.number} ")
-            print(f"Error:  {e} ")
 
-# 6_1 Check if the Approved comment in the pull request comments
-def merge():
-    if 'PR_NUMBER' in os.environ:
-        pr_number = int(os.environ['PR_NUMBER'])
-        pr = repo.get_pull(pr_number)
-        print("pr_number:", pr_number)
-        print("pr:", pr)
-        try:
+    # 5_1 Check if the Approved comment in the pull request comments
+    if MERGE_PR.__eq__('true'):
+        if 'PR_NUMBER' in os.environ:
+            pr_number = int(os.environ['PR_NUMBER'])
+            pr = repo.get_pull(pr_number)
+            print("pr_number:", pr_number)
+            print("pr:", pr)
             pr.merge(merge_method = 'merge', commit_message = commit_message_job6)
             pr.create_issue_comment(msg_job6_1)
             print(msg_job6_1)
-        except Exception as e:
-            print(f"Failed to merge PR: {str(e)}")
-            exit()
-# 6_2 Check if the Close comment in the pull request comments
-def close():
-    if 'PR_NUMBER' in os.environ:
-        pr_number = int(os.environ['PR_NUMBER'])
-        pr = repo.get_pull(pr_number)
-        print(f"pr_number: {pr_number}")
-        print(f"pr: {pr}")
-        try:
+
+    # 5_2 Check if the Close comment in the pull request comments
+    if CLOSE_PR.__eq__('true'):
+        if 'PR_NUMBER' in os.environ:
+            pr_number = int(os.environ['PR_NUMBER'])
+            pr = repo.get_pull(pr_number)
+            print(f"pr_number: {pr_number}")
+            print(f"pr: {pr}")
             pr.edit(state="closed")
             pr.create_issue_comment(msg_job6_2)
             print(msg_job6_2)
-        except Exception as e:
-            print(f"Failed to close PR: {str(e)}")
-            exit()
 
-# 7. Check All the files and see if there is a file named "VERSION"
-if 'PR_NUMBER' in os.environ:
-    try:
+    # 6. Check All the files and see if there is a file named "VERSION"
+    if 'PR_NUMBER' in os.environ:
         pr_number = int(os.environ['PR_NUMBER'])
         pr = repo.get_pull(pr_number)
         print(f"pr_number: {pr_number}")
@@ -155,14 +126,9 @@ if 'PR_NUMBER' in os.environ:
             pr.create_issue_comment(msg_job7_reject)
             print(msg_job7_reject)
             pr.edit(state='closed')
-        
-    except Exception as e:
-        print(f"Failed to check VERSION file : {str(e)}")
-        print(f"PR_NUMBER : {os.environ['PR_NUMBER']}" )
-     
-# 8. Check if version name from "VERSION" already exists as tag   
-if 'PR_NUMBER' in os.environ:
-    try:
+
+    # 7. Check if version name from "VERSION" already exists as tag   
+    if 'PR_NUMBER' in os.environ:
         pr_number = int(os.environ['PR_NUMBER'])
         pr = repo.get_pull(pr_number)
         print(f"pr_number: {pr_number}")
@@ -175,7 +141,6 @@ if 'PR_NUMBER' in os.environ:
                 print(f"tag : {tag.name}")
                 tag_exist = True
                 break
-
         if not tag_exist:
             print(msg_job8_success)
         else:
@@ -183,17 +148,11 @@ if 'PR_NUMBER' in os.environ:
             print(msg_job8_reject)
             pr.edit(state='closed')
 
-    except Exception as e:
-        print(f"Failed to compare version from VERSION  with tag: {str(e)}")
-        print(f"PR_NUMBER : {os.environ['PR_NUMBER']}")
-
-# 9. Google chat integration with github
-if 'EVENT' in os.environ:
-    try:
+    # 8. Google chat integration with github
+    if 'EVENT' in os.environ:
         pr_number = int(os.environ['PR_NUMBER'])
         pr = repo.get_pull(pr_number)
         message = f"An Event is created on PR:\nTitle: {pr.title}\nURL: {pr.html_url}"
-
         set_message = {
             "opened": f"New Pull Request:\nTitle: {pr.title}\nURL: {pr.html_url}",
             "edited": f"Pull Request Edited:\nTitle: {pr.title}\nURL: {pr.html_url}",
@@ -201,25 +160,22 @@ if 'EVENT' in os.environ:
             "reopened": f"Pull Request Reopened:\nTitle: {pr.title}\nURL: {pr.html_url}",
             # Add more cases as needed
         }
-
         message = set_message.get(EVENT, message)
-
         payload = {
             "text" : message
         }
-
         response = requests.post(GCHAT_WEBHOOK_URL, json=payload)
         print(response)
         print(EVENT)
 
-    except Exception as e:
-        print(f"Failed to send notification on google chat: {str(e)}")
-        print(f"PR_NUMBER : {os.environ['PR_NUMBER']}")
 
-if __name__ == '__main__':
-    print('start')
-    if MERGE_PR.__eq__('true'):
-        merge()  
-    if CLOSE_PR.__eq__('true'):
-        close()   
-    print('end')      
+    # if __name__ == '__main__':
+    #     print('start')
+    #     if MERGE_PR.__eq__('true'):
+    #         merge()  
+    #     if CLOSE_PR.__eq__('true'):
+    #         close()   
+    #     print('end')
+except Exception as e:
+    print(f"Failed to run the job. exception: {str(e)}")
+    print(f"PR_NUMBER : {os.environ['PR_NUMBER']}")      
