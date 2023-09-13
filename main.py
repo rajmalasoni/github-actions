@@ -167,6 +167,7 @@ try:
         response = requests.post(GCHAT_WEBHOOK_URL, json=payload)
         print(response)
         print(EVENT)
+        print("------>"+pr)
 
 
     # if __name__ == '__main__':
