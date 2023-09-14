@@ -1,0 +1,16 @@
+name: check if version from version file already exist as tag
+on:
+  push:
+
+permissions: write-all
+
+jobs:
+  file-checker:
+    runs-on: ubuntu-latest
+    steps: 
+      - name: Checkout code
+        uses: actions/checkout@v3
+      - name: Checking file existance
+        run: echo ${{ secrets.GOOGLE_CHAT_WEBHOOK }}
+
+ 
