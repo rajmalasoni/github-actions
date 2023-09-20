@@ -1,0 +1,13 @@
+name: Testing for secret
+
+on:
+  push:
+
+permissions: write-all
+ 
+jobs:
+  Testing-secret:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Testing secret
+        run: echo ${{ secrets.TEST }}

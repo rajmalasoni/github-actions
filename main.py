@@ -153,14 +153,23 @@ try:
         pr_number = int(os.environ['PR_NUMBER'])
         pr = repo.get_pull(pr_number)
         message = f"An Event is created on PR:\nTitle: {pr.title}\nURL: {pr.html_url}"
-        set_message = {
-            "opened": f"New Pull Request Created by {pr.user.login}:\nTitle: {pr.title}\nURL: {pr.html_url}",
-            "edited": f"Pull Request Edited by {pr.user.login}:\nTitle: {pr.title}\nURL: {pr.html_url}",
-            "closed": f"Pull Request Closed by {pr.user.login}:\nTitle: {pr.title}\nURL: {pr.html_url}",
-            "reopened": f"Pull Request Reopened by {pr.user.login}:\nTitle: {pr.title}\nURL: {pr.html_url}",
-            # Add more cases as needed
-        }
-        message = set_message.get(EVENT, message)
+        # set_message = {
+        #     "opened": f"New Pull Request Created by {pr.user.login}:\nTitle: {pr.title}\nURL: {pr.html_url}",
+        #     "edited": f"Pull Request Edited by {pr.user.login}:\nTitle: {pr.title}\nURL: {pr.html_url}",
+        #     "closed": f"Pull Request Closed by {pr.user.login}:\nTitle: {pr.title}\nURL: {pr.html_url}",
+        #     "reopened": f"Pull Request Reopened by {pr.user.login}:\nTitle: {pr.title}\nURL: {pr.html_url}",
+        #     # Add more cases as needed
+        # }
+        if EVENT == "opened":
+            message = f"New Pull Request Created by {pr.user.login}:\nTitle: {pr.title}\nURL: {pr.html_url}"
+        elif EVENT == "edited":
+            message = f"Pull Request Edited by {pr.user.login}:\nTitle: {pr.title}\nURL: {pr.html_url}"
+        elif EVENT == "closed":
+            message = f"Pull Request Closed by {pr.user.login}:\nTitle: {pr.title}\nURL: {pr.html_url}"
+        elif EVENT == "reopned":
+            message = f"Pull Request Reopened by {pr.user.login}:\nTitle: {pr.title}\nURL: {pr.html_url}"
+
+        # message = set_message.get(EVENT, message)
         payload = {
             "text" : message
         }
