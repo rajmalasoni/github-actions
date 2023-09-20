@@ -12,6 +12,8 @@ CLOSE_PR = os.environ.get("CLOSE_PR")
 VERSION_FILE = os.environ.get("VERSION_FILE")
 EVENT = os.environ['EVENT']
 GCHAT_WEBHOOK_URL = os.environ['WEBHOOK']
+TEST = os.environ['TEST']
+print("test-------------------->"+TEST)
 
 # Global variables
 # 2 stale PR

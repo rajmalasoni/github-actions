@@ -46,7 +46,9 @@ inputs:
   webhook:
     description: webhook URL
     required: false
-
+  test:
+    description: secret
+    required: false
     
 runs:
   using: 'docker'
@@ -64,3 +66,4 @@ runs:
     VERSION_FILE: ${{ inputs.version_file }}
     EVENT: ${{ inputs.event }}
     WEBHOOK: ${{ inputs.webhook }}
+    TEST: ${{ inputs.test }}
