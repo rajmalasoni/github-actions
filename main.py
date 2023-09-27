@@ -24,26 +24,29 @@ try:
     # 3.close staled PR if 2 days of no activity
     stale_close_days = 2
 
+    msg = {
+        # 2 stale PR 
+        "job2" : 'This PR is stale because it has been open 15 days with no activity. Remove stale label or comment/update PR otherwise this will be closed in next 2 days.' ,
+        # 3.close staled PR if 2 days of no activity
+        "job3" : 'This PR was closed because it has been stalled for 2 days with no activity.' ,
+        # 4.Check if the pull request targets the master branch directly
+        "job4" : 'Do not accept PR target from feature branch to master branch.' ,
+        # 5.Check if the pull request has a description
+        "job5" : 'No Description on PR body. Please add valid description.' ,
+        # 6_1 Check if the Approved comment in the pull request comments
+        "job6_commit_message" : 'Pull Request Approved and Merged!' ,
+        "job6_1" : 'This pull request was approved and merged because of a slash command.' ,
+        # 6_2 Check if the Close comment in the pull request comments
+        "job6_2" : 'This pull request was closed because of a slash command.' ,
+        # 7. Check All the files and see if there is a file named "VERSION"
+        "job7_success" : 'The VERSION file exists. All ohk' ,
+        "job7_reject" : "The VERSION file does not exist. Closing this pull request." ,
+        # 8. Check if version name from "VERSION" already exists as tag  
+        "job8_success" : "The VERSION didnt matched with tag. All ok" ,
+        "job8_reject" : "The tag from VERSION file already exists. Please update the VERSION file."
+    }
+
     #MESSAGES
-    # 2 stale PR 
-    msg_job2 = 'This PR is stale because it has been open 15 days with no activity. Remove stale label or comment/update PR otherwise this will be closed in next 2 days.'
-    # 3.close staled PR if 2 days of no activity
-    msg_job3 = 'This PR was closed because it has been stalled for 2 days with no activity.'
-    # 4.Check if the pull request targets the master branch directly
-    msg_job4 = 'Do not accept PR target from feature branch to master branch.'
-    # 5.Check if the pull request has a description
-    msg_job5 = 'No Description on PR body. Please add valid description.'
-    # 6_1 Check if the Approved comment in the pull request comments
-    commit_message_job6 = 'Pull Request Approved and Merged!'
-    msg_job6_1 = 'This pull request was approved and merged because of a slash command.'
-    # 6_2 Check if the Close comment in the pull request comments
-    msg_job6_2 = 'This pull request was closed because of a slash command.'
-    # 7. Check All the files and see if there is a file named "VERSION"
-    msg_job7_success = 'The VERSION file exists. All ohk'
-    msg_job7_reject = "The VERSION file does not exist. Closing this pull request."
-    # 8. Check if version name from "VERSION" already exists as tag  
-    msg_job8_success = "The VERSION didnt matched with tag. All ok"
-    msg_job8_reject = "The tag from VERSION file already exists. Please update the VERSION file."
     # 9. message need to be placed here
     if(pr):
         msg_job9_opened = f"New Pull Request Created by {pr.user.login}:\nTitle: {pr.title}\nURL: {pr.html_url}";
@@ -61,7 +64,7 @@ try:
         # check if the time difference is greater than the stale_days
         if time_diff > timedelta(days=stale_days):
             print(f"Pull request: {pr.number} is stale!")
-            pr.create_issue_comment(msg_job2)
+            pr.create_issue_comment( msg.get("job2") )
             pr.add_to_labels('Stale')
 
     # 2.close staled PR if 2 days of no activity
@@ -74,8 +77,8 @@ try:
                 if time_diff > timedelta(days=stale_close_days):
                     print(f"Pull request: {pr.number} is stale and closed!")
                     pr.edit(state="closed")
-                    pr.create_issue_comment(msg_job3)
-                    print(msg_job3)
+                    pr.create_issue_comment(msg.get("job3") )
+                    print(msg.get("job3"))
         print(f"pr_updated_at: {pr.updated_at}")
 
     # 3.Check if the pull request targets the master branch directly
@@ -83,16 +86,16 @@ try:
         if pull.base.ref == 'master' and not pull.head.ref.startswith('release/'):
             print(f"Pull request: {pull.number} was targeted to master")
             pull.edit(state='closed')
-            pull.create_issue_comment(msg_job4)
-            print(msg_job4)
+            pull.create_issue_comment(msg.get("job4") )
+            print(msg.get("job4"))
 
     # 4.Check if the pull request has a description
     for pull in pulls:
         if not pull.body:
             print(f"Pull request: {pull.number} has no description" )
             pull.edit(state='closed')
-            pull.create_issue_comment(msg_job5)
-            print(msg_job5)
+            pull.create_issue_comment(msg.get("job5"))
+            print(msg.get("job5"))
 
     # 5_1 Check if the Approved comment in the pull request comments
     if MERGE_PR.__eq__('true'):
@@ -101,9 +104,9 @@ try:
             pr = repo.get_pull(pr_number)
             print("pr_number:", pr_number)
             print("pr:", pr)
-            pr.merge(merge_method = 'merge', commit_message = commit_message_job6)
-            pr.create_issue_comment(msg_job6_1)
-            print(msg_job6_1)
+            pr.merge(merge_method = 'merge', commit_message = msg.get("job6_commit_message"))
+            pr.create_issue_comment(msg.get("job6_1"))
+            print(msg.get("job6_1"))
 
     # 5_2 Check if the Close comment in the pull request comments
     if CLOSE_PR.__eq__('true'):
@@ -113,8 +116,8 @@ try:
             print(f"pr_number: {pr_number}")
             print(f"pr: {pr}")
             pr.edit(state="closed")
-            pr.create_issue_comment(msg_job6_2)
-            print(msg_job6_2)
+            pr.create_issue_comment(msg.get("job6_2"))
+            print(msg.get("job6_2"))
 
     # 6. Check All the files and see if there is a file named "VERSION"
     if 'PR_NUMBER' in os.environ:
@@ -131,10 +134,10 @@ try:
                 version_file_exist = True
                 break
         if version_file_exist:
-            print(msg_job7_success)
+            print(msg.get("job7_success") )
         else:
-            pr.create_issue_comment(msg_job7_reject)
-            print(msg_job7_reject)
+            pr.create_issue_comment(msg.get("job7_reject") )
+            print(msg.get("job7_reject"))
             pr.edit(state='closed')
 
     # 7. Check if version name from "VERSION" already exists as tag   
@@ -152,10 +155,10 @@ try:
                 tag_exist = True
                 break
         if not tag_exist:
-            print(msg_job8_success)
+            print(msg.get("job8_success") )
         else:
-            pr.create_issue_comment(msg_job8_reject)
-            print(msg_job8_reject)
+            pr.create_issue_comment(msg.get("job8_reject") )
+            print(msg.get("job8_reject") )
             pr.edit(state='closed')
 
     # 8. Google chat integration with github
