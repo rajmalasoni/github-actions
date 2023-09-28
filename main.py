@@ -157,7 +157,7 @@ if 'PR_NUMBER' in os.environ:
         print(f"Failed to check VERSION file : {str(e)}")
         print(f"PR_NUMBER : {os.environ['PR_NUMBER']}" )
      
-# 8. Check if version name from "VERSION" already exists as tag   
+# 8. Check if the version name from "VERSION" already exists as tag   
 if 'PR_NUMBER' in os.environ:
     try:
         pr_number = int(os.environ['PR_NUMBER'])
