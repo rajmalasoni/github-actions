@@ -11,6 +11,9 @@ try:
 
     pr_number = int(os.environ['PR_NUMBER']) if ( os.environ['PR_NUMBER'] ) else None;
     pr = repo.get_pull(pr_number) if(pr_number) else None;
+    labels = pr.get_labels()
+    
+    
 
     MERGE_PR = os.environ.get("MERGE_PR")
     CLOSE_PR = os.environ.get("CLOSE_PR")
@@ -172,10 +175,19 @@ try:
             "closed": msg_job9_closed,
             "reopened": msg_job9_reopened,
         }
-        message = set_message.get(EVENT, message)
+
+    # 9. Do not merge PR message and close the PR
+    for label in labels:
+    # print(label.name)
+        if label.name == "DO NOT MERGE":
+            pr.edit(state='closed')
+            pr.create_issue_comment("Please remove DO NOT MERGE LABEL")
+            message = set_message.get(EVENT, message)
+
         payload = {
             "text" : message
         }
+
         response = requests.post(GCHAT_WEBHOOK_URL, json=payload)
         print(response)
         print(EVENT)
