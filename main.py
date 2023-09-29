@@ -10,9 +10,7 @@ try:
     pulls = repo.get_pulls(state='open')
 
     pr_number = int(os.environ['PR_NUMBER']) if ( os.environ['PR_NUMBER'] ) else None;
-    pr = repo.get_pull(pr_number) if(pr_number) else None;
-    labels = pr.get_labels()
-    
+    pr = repo.get_pull(pr_number) if(pr_number) else None;    
     
 
     MERGE_PR = os.environ.get("MERGE_PR")
@@ -46,7 +44,9 @@ try:
         "job7_reject" : "The VERSION file does not exist. Closing this pull request." ,
         # 8. Check if version name from "VERSION" already exists as tag  
         "job8_success" : "The VERSION didnt matched with tag. All ok" ,
-        "job8_reject" : "The tag from VERSION file already exists. Please update the VERSION file."
+        "job8_reject" : "The tag from VERSION file already exists. Please update the VERSION file.",
+        # Close the PR having DO NOT MERGE LABEL
+        "job9" : "Please remove DO NOT MERGE LABEL"
     }
 
     #MESSAGES
@@ -176,14 +176,6 @@ try:
             "reopened": msg_job9_reopened,
         }
 
-    # 9. Do not merge PR message and close the PR
-    for label in labels:
-    # print(label.name)
-        if label.name == "DO NOT MERGE":
-            pr.edit(state='closed')
-            pr.create_issue_comment("Please remove DO NOT MERGE LABEL")
-            message = set_message.get(EVENT, message)
-
         payload = {
             "text" : message
         }
@@ -191,6 +183,18 @@ try:
         response = requests.post(GCHAT_WEBHOOK_URL, json=payload)
         print(response)
         print(EVENT)
+
+    # 9. Do not merge PR message and close the PR
+    if pr:
+        labels = pr.get_labels()
+
+        for label in labels:
+        # print(label.name)
+            if label.name == "DO NOT MERGE":
+                pr.edit(state='closed')
+                pr.create_issue_comment(msg.get("job9"))
+                print(msg.get("job9"))
+                message = set_message.get(EVENT, message)    
 
 except Exception as e:
     print(f"Failed to run the job. exception: {str(e)}")      
