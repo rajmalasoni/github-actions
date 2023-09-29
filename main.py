@@ -144,7 +144,8 @@ try:
             pr.edit(state='closed')
 
     # 7. Check if version name from "VERSION" already exists as tag   
-    if 'PR_NUMBER' in os.environ:
+    # if 'PR_NUMBER' in os.environ:
+    if VERSION_FILE:
         pr_number = int(os.environ['PR_NUMBER'])
         pr = repo.get_pull(pr_number)
         print(f"pr_number: {pr_number}")
