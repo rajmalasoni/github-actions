@@ -186,15 +186,15 @@ try:
         print(EVENT)
 
     # 9. Do not merge PR message and close the PR
-    if pr:
-        labels = pr.get_labels()
+    # if pr:
+    #     labels = pr.get_labels()
 
-        for label in labels:
-        # print(label.name)
-            if label.name == "DO NOT MERGE":
-                pr.edit(state='closed')
-                pr.create_issue_comment(msg.get("job9"))
-                print(msg.get("job9"))
+    #     for label in labels:
+    #     # print(label.name)
+    #         if label.name == "DO NOT MERGE":
+    #             pr.edit(state='closed')
+    #             pr.create_issue_comment(msg.get("job9"))
+    #             print(msg.get("job9"))
 
 except Exception as e:
     print(f"Failed to run the job. exception: {str(e)}")      
