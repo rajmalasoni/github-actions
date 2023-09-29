@@ -1,7 +1,7 @@
 name: 'Close the PR having DO NOT MERGE LABEL'
 on:
   pull_request:
-    types: [opened, edited, reopened]
+    types: [opened, edited, reopened, labeled]
       
 permissions: write-all    
       
