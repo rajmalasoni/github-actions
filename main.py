@@ -144,8 +144,7 @@ try:
             pr.edit(state='closed')
 
     # 7. Check if version name from "VERSION" already exists as tag   
-    # if 'PR_NUMBER' in os.environ:
-    if VERSION_FILE:
+    if 'PR_NUMBER' in os.environ:
         pr_number = int(os.environ['PR_NUMBER'])
         pr = repo.get_pull(pr_number)
         print(f"pr_number: {pr_number}")
@@ -180,6 +179,7 @@ try:
         payload = {
             "text" : message
         }
+        message = set_message.get(EVENT, message)    
 
         response = requests.post(GCHAT_WEBHOOK_URL, json=payload)
         print(response)
@@ -195,7 +195,6 @@ try:
                 pr.edit(state='closed')
                 pr.create_issue_comment(msg.get("job9"))
                 print(msg.get("job9"))
-                message = set_message.get(EVENT, message)    
 
 except Exception as e:
     print(f"Failed to run the job. exception: {str(e)}")      
