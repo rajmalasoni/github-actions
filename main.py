@@ -175,11 +175,11 @@ try:
             "closed": msg_job9_closed,
             "reopened": msg_job9_reopened,
         }
+        message = set_message.get(EVENT, message)
 
         payload = {
             "text" : message
         }
-        message = set_message.get(EVENT, message)    
 
         response = requests.post(GCHAT_WEBHOOK_URL, json=payload)
         print(response)
