@@ -28,6 +28,8 @@ try:
     msg = {
         # 1 stale PR 
         "stale_label" : 'This PR is stale because it has been open 15 days with no activity. Remove stale label or comment/update PR otherwise this will be closed in next 2 days.' ,
+        "stale_days" : 15,
+        "stale_close_days" : 2,
         # 2.close staled PR if 2 days of no activity
         "staled_PR_closing" : 'This PR was closed because it has been stalled for 2 days with no activity.' ,
         # 3.Check if the pull request targets the master branch directly
@@ -65,7 +67,7 @@ try:
     for pr in pulls:
         time_diff = now - pr.updated_at
         # check if the time difference is greater than the stale_days
-        if time_diff > timedelta(days=stale_days):
+        if time_diff > timedelta(days=msg.get("stale_days")):
             print(f"Pull request: {pr.number} is stale!")
             pr.create_issue_comment( msg.get("stale_label") )
             pr.add_to_labels('Stale')
@@ -77,7 +79,7 @@ try:
             if "Stale" in [label.name for label in pr.labels]:
                 time_diff = now - pr.updated_at
                 # check if the time difference is greater than the stale_close_days
-                if time_diff > timedelta(days=stale_close_days):
+                if time_diff > timedelta(days=msg.get("stale_close_days")):
                     print(f"Pull request: {pr.number} is stale and closed!")
                     pr.edit(state="closed")
                     pr.create_issue_comment(msg.get("staled_PR_closing") )
@@ -165,15 +167,15 @@ try:
             pr.edit(state='closed')
 
     # 8. Do not merge PR message and close the PR
-    # if pr:
-    #     labels = pr.get_labels()
+    if pr:
+        labels = pr.get_labels()
 
-    #     for label in labels:
-    #     # print(label.name)
-    #         if label.name == "DO NOT MERGE":
-    #             pr.edit(state='closed')
-    #             pr.create_issue_comment(msg.get("label"))
-    #             print(msg.get("label"))        
+        for label in labels:
+        # print(label.name)
+            if label.name == "DO NOT MERGE":
+                pr.edit(state='closed')
+                pr.create_issue_comment(msg.get("label"))
+                print(msg.get("label"))        
 
     # 9. Google chat integration with github
     if 'EVENT' in os.environ:
