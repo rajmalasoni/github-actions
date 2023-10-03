@@ -19,12 +19,6 @@ try:
     EVENT = os.environ['EVENT']
     GCHAT_WEBHOOK_URL = os.environ['WEBHOOK']
 
-    # Global variables
-    # 2 stale PR
-    stale_days = 15
-    # 3.close staled PR if 2 days of no activity
-    stale_close_days = 2
-
     msg = {
         # 1 stale PR 
         "stale_label" : 'This PR is stale because it has been open 15 days with no activity. Remove stale label or comment/update PR otherwise this will be closed in next 2 days.' ,
