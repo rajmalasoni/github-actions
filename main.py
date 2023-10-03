@@ -165,15 +165,15 @@ try:
             pr.edit(state='closed')
 
     # 8. Do not merge PR message and close the PR
-    if pr:
-        labels = pr.get_labels()
+    # if pr:
+    #     labels = pr.get_labels()
 
-        for label in labels:
-        # print(label.name)
-            if label.name == "DO NOT MERGE":
-                pr.edit(state='closed')
-                pr.create_issue_comment(msg.get("label"))
-                print(msg.get("label"))        
+    #     for label in labels:
+    #     # print(label.name)
+    #         if label.name == "DO NOT MERGE":
+    #             pr.edit(state='closed')
+    #             pr.create_issue_comment(msg.get("label"))
+    #             print(msg.get("label"))        
 
     # 9. Google chat integration with github
     if 'EVENT' in os.environ:
