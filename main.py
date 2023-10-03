@@ -165,7 +165,7 @@ try:
             pr.edit(state='closed')
 
     # 8. Do not merge PR message and close the PR
-    if pr:
+    if (pr):
         labels = pr.get_labels()
 
         for label in labels:
