@@ -50,9 +50,6 @@ try:
         "pr_reopened" : f"Pull Request Reopened by {pr.user.login}:\nTitle: {pr.title}\nURL: {pr.html_url}"
     }
 
-    #MESSAGES
-    # if(pr):
-
     print("repo:",repo)
     print("pulls:",pulls)
 
