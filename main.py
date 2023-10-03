@@ -35,23 +35,23 @@ try:
         # 4.Check if the pull request has a description
         "check_description" : 'No Description on PR body. Please add valid description.' ,
         # 5_1 Check if the Approved comment in the pull request comments
-        "job5_commit_message" : 'Pull Request Approved and Merged!' ,
-        "job5_1" : 'This pull request was approved and merged because of a slash command.' ,
+        "approve_merge" : 'Pull Request Approved and Merged!' ,
+        "approve_comment" : 'This pull request was approved and merged because of a slash command.' ,
         # 5_2 Check if the Close comment in the pull request comments
-        "job5_2" : 'This pull request was closed because of a slash command.' ,
+        "closing_comment" : 'This pull request was closed because of a slash command.' ,
         # 6. Check All the files and see if there is a file named "VERSION"
-        "job6_success" : 'The VERSION file exists. All ohk' ,
-        "job6_reject" : "The VERSION file does not exist. Closing this pull request." ,
+        "check_version_file" : 'The VERSION file exists. All ohk' ,
+        "version_file_inexistence" : "The VERSION file does not exist. Closing this pull request." ,
         # 7. Check if version name from "VERSION" already exists as tag  
-        "job7_success" : "The VERSION didnt matched with tag. All ok" ,
-        "job7_reject" : "The tag from VERSION file already exists. Please update the VERSION file.",
+        "tagcheck_success" : "The VERSION didnt matched with tag. All ok" ,
+        "tagcheck_reject" : "The tag from VERSION file already exists. Please update the VERSION file.",
         # 8. Close the PR having DO NOT MERGE LABEL
-        "job8" : "Please remove DO NOT MERGE LABEL",
+        "label" : "Please remove DO NOT MERGE LABEL",
         # 9. message need to be placed here
-        "job9_opened" : f"New Pull Request Created by {pr.user.login}:\nTitle: {pr.title}\nURL: {pr.html_url}",
-        "job9_edited" : f"Pull Request Edited by {pr.user.login}:\nTitle: {pr.title}\nURL: {pr.html_url}",
-        "job9_closed" : f"Pull Request Closed by {pr.user.login}:\nTitle: {pr.title}\nURL: {pr.html_url}",
-        "job9_reopened" : f"Pull Request Reopened by {pr.user.login}:\nTitle: {pr.title}\nURL: {pr.html_url}"
+        "pr_opened" : f"New Pull Request Created by {pr.user.login}:\nTitle: {pr.title}\nURL: {pr.html_url}",
+        "pr_edited" : f"Pull Request Edited by {pr.user.login}:\nTitle: {pr.title}\nURL: {pr.html_url}",
+        "pr_closed" : f"Pull Request Closed by {pr.user.login}:\nTitle: {pr.title}\nURL: {pr.html_url}",
+        "pr_reopened" : f"Pull Request Reopened by {pr.user.login}:\nTitle: {pr.title}\nURL: {pr.html_url}"
     }
 
     #MESSAGES
@@ -107,9 +107,9 @@ try:
             pr = repo.get_pull(pr_number)
             print("pr_number:", pr_number)
             print("pr:", pr)
-            pr.merge(merge_method = 'merge', commit_message = msg.get("job5_commit_message"))
-            pr.create_issue_comment(msg.get("job5_1"))
-            print(msg.get("job5_1"))
+            pr.merge(merge_method = 'merge', commit_message = msg.get("approve_merge"))
+            pr.create_issue_comment(msg.get("approve_comment"))
+            print(msg.get("approve_comment"))
 
     # 5_2 Check if the Close comment in the pull request comments
     if CLOSE_PR.__eq__('true'):
@@ -119,8 +119,8 @@ try:
             print(f"pr_number: {pr_number}")
             print(f"pr: {pr}")
             pr.edit(state="closed")
-            pr.create_issue_comment(msg.get("job5_2"))
-            print(msg.get("job5_2"))
+            pr.create_issue_comment(msg.get("closing_comment"))
+            print(msg.get("closing_comment"))
 
     # 6. Check All the files and see if there is a file named "VERSION"
     if 'PR_NUMBER' in os.environ:
@@ -137,10 +137,10 @@ try:
                 version_file_exist = True
                 break
         if version_file_exist:
-            print(msg.get("job6_success") )
+            print(msg.get("check_version_file") )
         else:
-            pr.create_issue_comment(msg.get("job6_reject") )
-            print(msg.get("job6_reject"))
+            pr.create_issue_comment(msg.get("version_file_inexistence") )
+            print(msg.get("version_file_inexistence"))
             pr.edit(state='closed')
 
     # 7. Check if version name from "VERSION" already exists as tag   
@@ -158,22 +158,22 @@ try:
                 tag_exist = True
                 break
         if not tag_exist:
-            print(msg.get("job7_success") )
+            print(msg.get("tagcheck_success") )
         else:
-            pr.create_issue_comment(msg.get("job7_reject") )
-            print(msg.get("job7_reject") )
+            pr.create_issue_comment(msg.get("tagcheck_reject") )
+            print(msg.get("tagcheck_reject") )
             pr.edit(state='closed')
 
     # 8. Do not merge PR message and close the PR
-    # if pr:
-    #     labels = pr.get_labels()
+    if pr:
+        labels = pr.get_labels()
 
-    #     for label in labels:
-    #     # print(label.name)
-    #         if label.name == "DO NOT MERGE":
-    #             pr.edit(state='closed')
-    #             pr.create_issue_comment(msg.get("job8"))
-    #             print(msg.get("job8"))        
+        for label in labels:
+        # print(label.name)
+            if label.name == "DO NOT MERGE":
+                pr.edit(state='closed')
+                pr.create_issue_comment(msg.get("label"))
+                print(msg.get("label"))        
 
     # 9. Google chat integration with github
     if 'EVENT' in os.environ:
@@ -181,10 +181,10 @@ try:
         pr = repo.get_pull(pr_number)
         message = f"An Event is created on PR:\nTitle: {pr.title}\nURL: {pr.html_url}"
         set_message = {
-            "opened": msg.get("job9_opened"),
-            "edited": msg.get("job9_edited"),
-            "closed": msg.get("job9_closed"),
-            "reopened": msg.get("job9_reopened")
+            "opened": msg.get("pr_opened"),
+            "edited": msg.get("pr_edited"),
+            "closed": msg.get("pr_closed"),
+            "reopened": msg.get("pr_reopened")
         }
         message = set_message.get(EVENT, message)
 
