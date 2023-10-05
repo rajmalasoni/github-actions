@@ -44,10 +44,10 @@ try:
         # 8. Close the PR having DO NOT MERGE LABEL
         "label" : "Please remove DO NOT MERGE LABEL",
         # 9. message need to be placed here
-        "pr_opened" : f"New Pull Request Created by {pr.user.login}:\nTitle: {pr.title}\nURL: {pr.html_url}",
-        "pr_edited" : f"Pull Request Edited by {pr.user.login}:\nTitle: {pr.title}\nURL: {pr.html_url}",
-        "pr_closed" : f"Pull Request Closed by {pr.user.login}:\nTitle: {pr.title}\nURL: {pr.html_url}",
-        "pr_reopened" : f"Pull Request Reopened by {pr.user.login}:\nTitle: {pr.title}\nURL: {pr.html_url}"
+        "opened" : f"New Pull Request Created by {pr.user.login}:\nTitle: {pr.title}\nURL: {pr.html_url}",
+        "edited" : f"Pull Request Edited by {pr.user.login}:\nTitle: {pr.title}\nURL: {pr.html_url}",
+        "closed" : f"Pull Request Closed by {pr.user.login}:\nTitle: {pr.title}\nURL: {pr.html_url}",
+        "reopened" : f"Pull Request Reopened by {pr.user.login}:\nTitle: {pr.title}\nURL: {pr.html_url}"
     }
 
     print("repo:",repo)
@@ -173,13 +173,13 @@ try:
         pr_number = int(os.environ['PR_NUMBER'])
         pr = repo.get_pull(pr_number)
         message = f"An Event is created on PR:\nTitle: {pr.title}\nURL: {pr.html_url}"
-        set_message = {
-            "opened": msg.get("pr_opened"),
-            "edited": msg.get("pr_edited"),
-            "closed": msg.get("pr_closed"),
-            "reopened": msg.get("pr_reopened")
-        }
-        message = set_message.get(EVENT, message)
+        # set_message = {
+        #     "opened": msg.get("pr_opened"),
+        #     "edited": msg.get("pr_edited"),
+        #     "closed": msg.get("pr_closed"),
+        #     "reopened": msg.get("pr_reopened")
+        # }
+        message = msg.get(EVENT, message)
 
         payload = {
             "text" : message
