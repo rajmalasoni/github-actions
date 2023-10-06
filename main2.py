@@ -145,7 +145,7 @@ if pr:
             pr.create_issue_comment(msg.get("label"))
             print(msg.get("label"))        
 # 9. Google chat integration with github
-if 'EVENT' in os.environ:
+if GCHAT_WEBHOOK_URL:
     message = f"An Event is created on PR:\nTitle: {pr.title}\nURL: {pr.html_url}"
 
     message = msg.get(EVENT, message)
