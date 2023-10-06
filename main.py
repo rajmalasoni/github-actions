@@ -170,7 +170,7 @@ try:
                 print(msg.get("label"))        
 
     # 9. Google chat integration with github
-    if 'EVENT' in os.environ:
+    if EVENT and GCHAT_WEBHOOK_URL:
         # pr_number = int(os.environ['PR_NUMBER'])
         # pr = repo.get_pull(pr_number)
         message = f"An Event is created on PR:\nTitle: {pr.title}\nURL: {pr.html_url}"
