@@ -171,8 +171,8 @@ try:
 
     # 9. Google chat integration with github
     if 'EVENT' in os.environ:
-        pr_number = int(os.environ['PR_NUMBER'])
-        pr = repo.get_pull(pr_number)
+        # pr_number = int(os.environ['PR_NUMBER'])
+        # pr = repo.get_pull(pr_number)
         message = f"An Event is created on PR:\nTitle: {pr.title}\nURL: {pr.html_url}"
         # set_message = {
         #     "opened": msg.get("pr_opened"),
