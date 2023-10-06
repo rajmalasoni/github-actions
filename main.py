@@ -11,7 +11,6 @@ try:
 
     pr_number = int(os.environ['PR_NUMBER']) if ( os.environ['PR_NUMBER'] ) else None;
     pr = repo.get_pull(pr_number) if(pr_number) else None;    
-    
 
     MERGE_PR = os.environ.get("MERGE_PR")
     CLOSE_PR = os.environ.get("CLOSE_PR")
@@ -46,9 +45,9 @@ try:
         # 9. message need to be placed here
     }
     if pr:
-        msg["opened"] = f"New Pull Request Created by {pr.user.login}:\nTitle: {pr.title}\nURL: {pr.html_url}",
-        msg["edited"] = f"Pull Request Edited by {pr.user.login}:\nTitle: {pr.title}\nURL: {pr.html_url}",
-        msg["closed"] = f"Pull Request Closed by {pr.user.login}:\nTitle: {pr.title}\nURL: {pr.html_url}",
+        msg["opened"] = f"New Pull Request Created by {pr.user.login}:\nTitle: {pr.title}\nURL: {pr.html_url}"
+        msg["edited"] = f"Pull Request Edited by {pr.user.login}:\nTitle: {pr.title}\nURL: {pr.html_url}"
+        msg["closed"] = f"Pull Request Closed by {pr.user.login}:\nTitle: {pr.title}\nURL: {pr.html_url}"
         msg["reopened"] = f"Pull Request Reopened by {pr.user.login}:\nTitle: {pr.title}\nURL: {pr.html_url}"
 
 
@@ -57,13 +56,13 @@ try:
 
     # 1.Add "Stale" label to the PR if no active from 15 days
     now = datetime.now()
-    for pr in pulls:
-        time_diff = now - pr.updated_at
+    for pull in pulls:
+        time_diff = now - pull.updated_at
         # check if the time difference is greater than the stale_days
         if time_diff > timedelta(days=msg.get("stale_days")):
-            print(f"Pull request: {pr.number} is stale!")
-            pr.create_issue_comment( msg.get("stale_label") )
-            pr.add_to_labels('Stale')
+            print(f"Pull request: {pull.number} is stale!")
+            pull.create_issue_comment( msg.get("stale_label") )
+            pull.add_to_labels('Stale')
 
     # 2.close staled PR if 2 days of no activity
     if pulls.totalCount != 0:
