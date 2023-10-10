@@ -146,7 +146,7 @@ try:
     if pr:
         print("---------running Do not merge checker---------")
         labels = pr.get_labels()
-
+        print(labels)
         for label in labels:
             print(f"label->{label.name}")
             if label.name == "DO NOT MERGE":
