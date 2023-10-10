@@ -42,8 +42,8 @@ try:
         "tagcheck_reject" : "The tag from VERSION file already exists. Please update the VERSION file.",
         # 8. Close the PR having DO NOT MERGE LABEL
         "label" : "Please remove DO NOT MERGE LABEL",
-        # 9. message need to be placed here
     }
+    # 9. Messages for Ghat integration
     if pr:
         msg["opened"] = f"New Pull Request Created by {pr.user.login}:\nTitle: {pr.title}\nURL: {pr.html_url}"
         msg["edited"] = f"Pull Request Edited by {pr.user.login}:\nTitle: {pr.title}\nURL: {pr.html_url}"
