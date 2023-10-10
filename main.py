@@ -148,6 +148,7 @@ try:
         labels = pr.get_labels()
 
         for label in labels:
+            print(f"label->{label.name}")
             if label.name == "DO NOT MERGE":
                 print("----do not merge label found------")
                 pr.edit(state='closed')
