@@ -96,32 +96,20 @@ try:
 
     # 5_1 Check if the Approved comment in the pull request comments
     if MERGE_PR.__eq__('true'):
-        if 'PR_NUMBER' in os.environ:
-            pr_number = int(os.environ['PR_NUMBER'])
-            pr = repo.get_pull(pr_number)
-            print("pr_number:", pr_number)
-            print("pr:", pr)
+        if pr:    
             pr.merge(merge_method = 'merge', commit_message = msg.get("approve_merge"))
             pr.create_issue_comment(msg.get("approve_comment"))
             print(msg.get("approve_comment"))
 
     # 5_2 Check if the Close comment in the pull request comments
     if CLOSE_PR.__eq__('true'):
-        if 'PR_NUMBER' in os.environ:
-            pr_number = int(os.environ['PR_NUMBER'])
-            pr = repo.get_pull(pr_number)
-            print(f"pr_number: {pr_number}")
-            print(f"pr: {pr}")
+        if pr:            
             pr.edit(state="closed")
             pr.create_issue_comment(msg.get("closing_comment"))
             print(msg.get("closing_comment"))
 
     # 6. Check All the files and see if there is a file named "VERSION"
-    if 'PR_NUMBER' in os.environ:
-        pr_number = int(os.environ['PR_NUMBER'])
-        pr = repo.get_pull(pr_number)
-        print(f"pr_number: {pr_number}")
-        print(f"pr: {pr}")
+    if pr:        
         files = pr.get_files()
         print(files)
         version_file_exist = False
@@ -138,11 +126,7 @@ try:
             pr.edit(state='closed')
 
     # 7. Check if version name from "VERSION" already exists as tag   
-    if 'PR_NUMBER' in os.environ:
-        pr_number = int(os.environ['PR_NUMBER'])
-        pr = repo.get_pull(pr_number)
-        print(f"pr_number: {pr_number}")
-        print(f"pr: {pr}")
+    if pr and VERSION_FILE:    
         print(f"version from VERSION_FILE : {VERSION_FILE}")
         tags = repo.get_tags()
         tag_exist = False
@@ -163,7 +147,6 @@ try:
         labels = pr.get_labels()
 
         for label in labels:
-        # print(label.name)
             if label.name == "DO NOT MERGE":
                 pr.edit(state='closed')
                 pr.create_issue_comment(msg.get("label"))
@@ -171,15 +154,7 @@ try:
 
     # 9. Google chat integration with github
     if EVENT and GCHAT_WEBHOOK_URL:
-        # pr_number = int(os.environ['PR_NUMBER'])
-        # pr = repo.get_pull(pr_number)
         message = f"An Event is created on PR:\nTitle: {pr.title}\nURL: {pr.html_url}"
-        # set_message = {
-        #     "opened": msg.get("pr_opened"),
-        #     "edited": msg.get("pr_edited"),
-        #     "closed": msg.get("pr_closed"),
-        #     "reopened": msg.get("pr_reopened")
-        # }
         message = msg.get(EVENT, message)
 
         payload = {
