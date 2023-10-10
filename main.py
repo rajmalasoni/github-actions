@@ -144,10 +144,12 @@ try:
 
     # 8. Do not merge PR message and close the PR
     if pr:
+        print("---------running Do not merge checker---------")
         labels = pr.get_labels()
 
         for label in labels:
             if label.name == "DO NOT MERGE":
+                print("----do not merge label found------")
                 pr.edit(state='closed')
                 pr.create_issue_comment(msg.get("label"))
                 print(msg.get("label"))        
