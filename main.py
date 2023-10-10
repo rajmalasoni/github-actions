@@ -9,8 +9,8 @@ try:
     repo = g.get_repo(os.environ['REPO_NAME'])
     pulls = repo.get_pulls(state='open')
 
-    pr_number = int(os.environ['PR_NUMBER']) if ( os.environ['PR_NUMBER'] ) else None;
-    pr = repo.get_pull(pr_number) if(pr_number) else None;    
+    pr_number = int(os.environ['PR_NUMBER']) if ( os.environ['PR_NUMBER'] ) else None
+    pr = repo.get_pull(pr_number) if(pr_number) else None    
 
     MERGE_PR = os.environ.get("MERGE_PR")
     CLOSE_PR = os.environ.get("CLOSE_PR")
@@ -146,6 +146,8 @@ try:
     if pr:
         print("---------running Do not merge checker---------")
         labels = pr.get_labels()
+        print(pr)
+        print(pr_number)
         print(labels)
         for label in labels:
             print(f"label->{label.name}")
