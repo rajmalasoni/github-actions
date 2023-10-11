@@ -42,8 +42,8 @@ try:
         "tagcheck_reject" : "The tag from VERSION file already exists. Please update the VERSION file.",
         # 8. Close the PR having DO NOT MERGE LABEL
         "label" : "Please remove DO NOT MERGE LABEL",
+        # 9. message need to be placed here
     }
-    # 9. Messages for Ghat integration
     if pr:
         msg["opened"] = f"New Pull Request Created by {pr.user.login}:\nTitle: {pr.title}\nURL: {pr.html_url}"
         msg["edited"] = f"Pull Request Edited by {pr.user.login}:\nTitle: {pr.title}\nURL: {pr.html_url}"
@@ -56,38 +56,32 @@ try:
 
     # 1.Add "Stale" label to the PR if no active from 15 days
     now = datetime.now()
+
     for pull in pulls:
         time_diff = now - pull.updated_at
-        # check if the time difference is greater than the stale_days
+        # 1. Check if the time difference is greater than the stale_days
         if time_diff > timedelta(days=msg.get("stale_days")):
             print(f"Pull request: {pull.number} is stale!")
             pull.create_issue_comment( msg.get("stale_label") )
             pull.add_to_labels('Stale')
 
-    # 2.close staled PR if 2 days of no activity
-    if pulls.totalCount != 0:
-        for pr in pulls:
-            # check if the Stale label is applied on PR
-            if "Stale" in [label.name for label in pr.labels]:
-                time_diff = now - pr.updated_at
-                # check if the time difference is greater than the stale_close_days
-                if time_diff > timedelta(days=msg.get("stale_close_days")):
-                    print(f"Pull request: {pr.number} is stale and closed!")
-                    pr.edit(state="closed")
-                    pr.create_issue_comment(msg.get("staled_PR_closing") )
-                    print(msg.get("staled_PR_closing"))
-        print(f"pr_updated_at: {pr.updated_at}")
+        # 2. Close staled PR if 2 days of no activity
+        if "Stale" in [label.name for label in pull.labels]:
+            # check if the time difference is greater than the stale_close_days
+            if time_diff > timedelta(days=msg.get("stale_close_days")):
+                print(f"Pull request: {pull.number} is stale and closed!")
+                pull.edit(state="closed")
+                pull.create_issue_comment(msg.get("staled_PR_closing") )
+                print(msg.get("staled_PR_closing"))
 
-    # 3.Check if the pull request targets the master branch directly
-    for pull in pulls:
+        # 3.Check if the pull request targets the master branch directly
         if pull.base.ref == 'master' and not pull.head.ref.startswith('release/'):
             print(f"Pull request: {pull.number} was targeted to master")
             pull.edit(state='closed')
             pull.create_issue_comment(msg.get("check_PR_target") )
             print(msg.get("check_PR_target"))
 
-    # 4.Check if the pull request has a description
-    for pull in pulls:
+        # 4.Check if the pull request has a description
         if not pull.body:
             print(f"Pull request: {pull.number} has no description" )
             pull.edit(state='closed')
@@ -149,13 +143,11 @@ try:
         print(pr)
         print(pr_number)
         print(labels)
-        for label in labels:
-            print(f"label->{label.name}")
-            if label.name == "DO NOT MERGE":
-                print("----do not merge label found------")
-                pr.edit(state='closed')
-                pr.create_issue_comment(msg.get("label"))
-                print(msg.get("label"))        
+        if "DO NOT MERGE" in [label.name for label in pr.labels]:
+            print("----do not merge label found------")
+            pr.edit(state='closed')
+            pr.create_issue_comment(msg.get("label"))
+            print(msg.get("label"))        
 
     # 9. Google chat integration with github
     if EVENT and GCHAT_WEBHOOK_URL:
