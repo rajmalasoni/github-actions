@@ -70,16 +70,16 @@ try:
             # check if the time difference is greater than the stale_close_days
             if time_diff > timedelta(days=msg.get("stale_close_days")):
                 print(f"Pull request: {pull.number} is stale and closed!")
+                print(msg.get("staled_PR_closing"))
                 pull.edit(state="closed")
                 pull.create_issue_comment(msg.get("staled_PR_closing") )
-                print(msg.get("staled_PR_closing"))
 
         # 3.Check if the pull request targets the master branch directly
         if pull.base.ref == 'master' and not pull.head.ref.startswith('release/'):
             print(f"Pull request: {pull.number} was targeted to master")
+            print(msg.get("check_PR_target"))
             pull.edit(state='closed')
             pull.create_issue_comment(msg.get("check_PR_target") )
-            print(msg.get("check_PR_target"))
 
         # 4.Check if the pull request has a description
         if not pull.body:
@@ -138,13 +138,11 @@ try:
 
     # 8. Do not merge PR message and close the PR
     if pr:
-        print("---------running Do not merge checker---------")
         labels = pr.get_labels()
         print(pr)
         print(pr_number)
         print(labels)
-        if "DO NOT MERGE" in [label.name for label in pr.labels]:
-            print("----do not merge label found------")
+        if "DO NOT MERGE" in [label.name for label in pull.labels]:
             pr.edit(state='closed')
             pr.create_issue_comment(msg.get("label"))
             print(msg.get("label"))        
