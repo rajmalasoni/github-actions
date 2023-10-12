@@ -138,11 +138,13 @@ try:
 
     # 8. Do not merge PR message and close the PR
     if pr:
+        print("<<<<<Checking the Do not merge logic>>>>>>")
         labels = pr.get_labels()
         print(pr)
         print(pr_number)
         print(labels)
         if "DO NOT MERGE" in [label.name for label in pull.labels]:
+            print("<<<<checking the if condition>>>>>")
             pr.edit(state='closed')
             pr.create_issue_comment(msg.get("label"))
             print(msg.get("label"))        
