@@ -45,6 +45,7 @@ try:
         # 9. message need to be placed here
     }
     if pr:
+        msg["default"] = f"An Event is created on PR:\nTitle: {pr.title}\nURL: {pr.html_url}"
         msg["opened"] = f"New Pull Request Created by {pr.user.login}:\nTitle: {pr.title}\nURL: {pr.html_url}"
         msg["edited"] = f"Pull Request Edited by {pr.user.login}:\nTitle: {pr.title}\nURL: {pr.html_url}"
         msg["closed"] = f"Pull Request Closed by {pr.user.login}:\nTitle: {pr.title}\nURL: {pr.html_url}"
@@ -149,7 +150,7 @@ try:
 
     # 9. Google chat integration with github
     if EVENT and GCHAT_WEBHOOK_URL:
-        message = f"An Event is created on PR:\nTitle: {pr.title}\nURL: {pr.html_url}"
+        message = msg.get("default")
         message = msg.get(EVENT, message)
 
         payload = {
