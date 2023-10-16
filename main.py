@@ -143,7 +143,7 @@ try:
         print(pr)
         print(pr_number)
         print(labels)
-        if "DO NOT MERGE" in [label.name for label in pull.labels]:
+        if "DO NOT MERGE" in [label.name for label in labels]:
             pr.edit(state='closed')
             pr.create_issue_comment(msg.get("label"))
             print(msg.get("label"))        
