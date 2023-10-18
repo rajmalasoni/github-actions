@@ -89,22 +89,34 @@ try:
             pull.create_issue_comment(msg.get("check_description"))
             print(msg.get("check_description"))
 
-    # 5_1 Check if the Approved comment in the pull request comments
-    if MERGE_PR.__eq__('true'):
-        if pr:    
+    # # 5_1 Check if the Approved comment in the pull request comments
+    # if MERGE_PR.__eq__('true'):
+    #     if pr:    
+    #         pr.merge(merge_method = 'merge', commit_message = msg.get("approve_merge"))
+    #         pr.create_issue_comment(msg.get("approve_comment"))
+    #         print(msg.get("approve_comment"))
+
+    # 5_2 Check if the Close comment in the pull request comments
+    #if CLOSE_PR.__eq__('true'):
+        # if pr:            
+        #     pr.edit(state="closed")
+        #     pr.create_issue_comment(msg.get("closing_comment"))
+        #     print(msg.get("closing_comment"))
+
+    if pr:
+        # 5_1 Check if the Approved comment in the pull request comments
+        if MERGE_PR.__eq__('true'):    
             pr.merge(merge_method = 'merge', commit_message = msg.get("approve_merge"))
             pr.create_issue_comment(msg.get("approve_comment"))
             print(msg.get("approve_comment"))
 
-    # 5_2 Check if the Close comment in the pull request comments
-    if CLOSE_PR.__eq__('true'):
-        if pr:            
+        # 5_2 Check if the Close comment in the pull request comments
+        if CLOSE_PR.__eq__('true'):           
             pr.edit(state="closed")
             pr.create_issue_comment(msg.get("closing_comment"))
             print(msg.get("closing_comment"))
 
-    # 6. Check All the files and see if there is a file named "VERSION"
-    if pr:        
+        # 6. Check All the files and see if there is a file named "VERSION"
         files = pr.get_files()
         print(files)
         version_file_exist = False
@@ -120,25 +132,24 @@ try:
             print(msg.get("version_file_inexistence"))
             pr.edit(state='closed')
 
-    # 7. Check if version name from "VERSION" already exists as tag   
-    if pr and VERSION_FILE:    
-        print(f"version from VERSION_FILE : {VERSION_FILE}")
-        tags = repo.get_tags()
-        tag_exist = False
-        for tag in tags:
-            if tag.name == VERSION_FILE:
-                print(f"tag : {tag.name}")
-                tag_exist = True
-                break
-        if not tag_exist:
-            print(msg.get("tagcheck_success") )
-        else:
-            pr.create_issue_comment(msg.get("tagcheck_reject") )
-            print(msg.get("tagcheck_reject") )
-            pr.edit(state='closed')
+        # 7. Check if version name from "VERSION" already exists as tag   
+        if VERSION_FILE:    
+            print(f"version from VERSION_FILE : {VERSION_FILE}")
+            tags = repo.get_tags()
+            tag_exist = False
+            for tag in tags:
+                if tag.name == VERSION_FILE:
+                    print(f"tag : {tag.name}")
+                    tag_exist = True
+                    break
+            if not tag_exist:
+                print(msg.get("tagcheck_success") )
+            else:
+                pr.create_issue_comment(msg.get("tagcheck_reject") )
+                print(msg.get("tagcheck_reject") )
+                pr.edit(state='closed')
 
-    # 8. Do not merge PR message and close the PR
-    if pr:
+        # 8. Do not merge PR message and close the PR
         labels = pr.get_labels()
         print(pr)
         print(pr_number)
