@@ -19,7 +19,8 @@ try:
     GCHAT_WEBHOOK_URL = os.environ['WEBHOOK']
 
     user_map = {
-        "Arun9015" : "arun.kumar@impressico.com"
+        "Arun9015" : "arun.kumar@impressico.com" ,
+        "Aarif2khan" : "aarif.khan@impressico.com"
     }
     msg = {
         # 1 stale PR 
