@@ -18,6 +18,9 @@ try:
     EVENT = os.environ['EVENT']
     GCHAT_WEBHOOK_URL = os.environ['WEBHOOK']
 
+    user_map = {
+        "Arun9015" : "arun.kumar@impressico.com"
+    }
     msg = {
         # 1 stale PR 
         "stale_label" : 'This PR is stale because it has been open 15 days with no activity. Remove stale label or comment/update PR otherwise this will be closed in next 2 days.' ,
@@ -46,7 +49,7 @@ try:
     }
     if pr:
         msg["default"] = f"An Event is created on PR:\nTitle: {pr.title}\nURL: {pr.html_url}"
-        msg["opened"] = f"New Pull Request Created by {pr.user.login}:\nTitle: {pr.title}\nURL: {pr.html_url}"
+        msg["opened"] = f"New Pull Request Created by {user_map.get( pr.user.login , pr.user.login)}:\nTitle: {pr.title}\nURL: {pr.html_url}"
         msg["edited"] = f"Pull Request Edited by {pr.user.login}:\nTitle: {pr.title}\nURL: {pr.html_url}"
         msg["closed"] = f"Pull Request Closed by {pr.user.login}:\nTitle: {pr.title}\nURL: {pr.html_url}"
         msg["reopened"] = f"Pull Request Reopened by {pr.user.login}:\nTitle: {pr.title}\nURL: {pr.html_url}"
