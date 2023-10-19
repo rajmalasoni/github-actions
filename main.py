@@ -51,9 +51,9 @@ try:
     if pr:
         msg["default"] = f"An Event is created on PR:\nTitle: {pr.title}\nURL: {pr.html_url}"
         msg["opened"] = f"New Pull Request Created by {user_map.get( pr.user.login , pr.user.login)}:\nTitle: {pr.title}\nURL: {pr.html_url}"
-        msg["edited"] = f"Pull Request Edited by {pr.user.login}:\nTitle: {pr.title}\nURL: {pr.html_url}"
-        msg["closed"] = f"Pull Request Closed by {pr.user.login}:\nTitle: {pr.title}\nURL: {pr.html_url}"
-        msg["reopened"] = f"Pull Request Reopened by {pr.user.login}:\nTitle: {pr.title}\nURL: {pr.html_url}"
+        msg["edited"] = f"Pull Request Edited by {user_map.get( pr.user.login , pr.user.login)}:\nTitle: {pr.title}\nURL: {pr.html_url}"
+        msg["closed"] = f"Pull Request Closed by {user_map.get( pr.user.login , pr.user.login)}:\nTitle: {pr.title}\nURL: {pr.html_url}"
+        msg["reopened"] = f"Pull Request Reopened by {user_map.get( pr.user.login , pr.user.login)}:\nTitle: {pr.title}\nURL: {pr.html_url}"
 
 
     print("repo:",repo)
