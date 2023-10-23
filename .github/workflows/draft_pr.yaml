@@ -1,0 +1,20 @@
+name: Covert to Draft
+
+on:
+  push:
+
+jobs:
+  draft-pr:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+
+      - name: Close PR
+        run: |
+          PR_NUMBER=46
+          # Close the PR using the GitHub CLI
+          gh pr reopen $PR_NUMBER --draft
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
