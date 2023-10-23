@@ -15,6 +15,6 @@ jobs:
         run: |
           PR_NUMBER=46
           # Close the PR using the GitHub CLI
-          gh pr reopen $PR_NUMBER --draft
+          gh pr view $PR_NUMBER --json draft --jq '.draft' | grep -q true || gh pr edit $PR_NUMBER --set-draft
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
