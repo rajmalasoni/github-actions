@@ -1,0 +1,22 @@
+name: GitHub CLI Action
+
+on:
+  pull_request:
+    types: [opened, edited, reopened]
+
+permissions: write-all
+
+env:
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+jobs:
+  run-gh-cli:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Create tag
+        uses: imp-ress-ico/github-actions/actions/pr_draft@devops/gYh6OnBk/1809
+    
